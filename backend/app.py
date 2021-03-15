@@ -1,7 +1,10 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify, Response
+from flask_cors import CORS
 from custom_search_engine import fetchCustomSearch
-from article import getArticles
+from article import filterArticleProperty
+
 app = Flask(__name__)
+CORS(app)
 
 
 @app.errorhandler(Exception)
@@ -13,6 +16,7 @@ def server_error(err):
 @app.route('/fetch', methods=['GET'])
 def index():
 
+    category = request.args.get('type', '')
     cx = request.args.get('cx', '')
     query = request.args.get('query', '')
     page = request.args.get('page', '1')
@@ -20,7 +24,11 @@ def index():
 
     response = fetchCustomSearch(cx, query, page, region)
 
-    return getArticles(response)
+    if(category == 'article'):
+        filterArticle = filterArticleProperty(response)
+        return Response(response=filterArticle, status=200, mimetype='application/json')
+    else:
+        return 0
 
 
 if __name__ == '__main__':
