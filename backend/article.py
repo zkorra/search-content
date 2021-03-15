@@ -4,6 +4,7 @@ import pandas as pd
 import datetime
 from dateutil.parser import parse
 import tldextract
+import json
 
 
 def is_date(string, fuzzy=False):
@@ -21,7 +22,25 @@ def is_date(string, fuzzy=False):
         return False
 
 
-def cleanArticles(dataframe):
+def cleanArticleDataframe(dataframe):
+
+    pd.set_option('mode.chained_assignment', None)
+
+    # SELECT PROPERTIES
+    # cse_title
+    # cse_description
+    # cse_url
+    # cse_image
+    # meta_title
+    # meta_description
+    # meta_url
+    # meta_image
+    # meta_article_published_time
+    # meta_article_author
+    # meta_author
+    # meta_section
+    # meta_site_name
+    # meta_type
 
     month_dict = {
         "ม.ค.": "Jan",
@@ -60,15 +79,15 @@ def cleanArticles(dataframe):
 
         if(pd.isnull(dataframe['meta_site_name'][index])):
             dataframe['meta_site_name'][index] = tldextract.extract(
-                dataframe_new['cse_url'][index]).domain.capitalize()
+                dataframe['cse_url'][index]).domain.capitalize()
 
-        # if(pd.isnull(dataframe_new['meta_image'][index])):
-        #     dataframe_new['image'][index] = dataframe_new['cse_image'][index]
-        # else:
-        #     dataframe_new['image'][index] = dataframe_new['meta_image'][index]
-        #     if(dataframe_new['image'][index][0] == '/' and dataframe_new['image'][index][1] == '/'):
-        #         dataframe_new['image'][index] = dataframe_new['image'][index].replace(
-        #             "//", "https://")
+        if(pd.isnull(dataframe['meta_image'][index])):
+            dataframe['image'][index] = dataframe['cse_image'][index]
+        else:
+            dataframe['image'][index] = dataframe['meta_image'][index]
+            # if(dataframe_new['image'][index][0] == '/' and dataframe_new['image'][index][1] == '/'):
+            #     dataframe_new['image'][index] = dataframe_new['image'][index].replace(
+            #         "//", "https://")
 
         if(pd.isnull(dataframe['meta_article_published_time'][index])):
             date = dataframe['cse_description'][index].split(' ... ')[
@@ -100,7 +119,7 @@ def cleanArticles(dataframe):
     return dataframe_export
 
 
-def getArticles(data):
+def filterArticleProperty(data):
 
     dataframe = pd.DataFrame(columns=[
         'cse_title',
@@ -118,6 +137,8 @@ def getArticles(data):
         'meta_site_name',
         'meta_type',
     ])
+
+    articleList = []
 
     # get the result items
     result_items = data.get("items")
@@ -194,6 +215,6 @@ def getArticles(data):
 
             dataframe = dataframe.append(row, ignore_index=True)
 
-        cleanedDataframe = cleanArticles(dataframe)
+        cleanedArticle = cleanArticleDataframe(dataframe)
 
-    return cleanedDataframe.to_json(orient='records')
+    return cleanedArticle.to_json(orient='records')
