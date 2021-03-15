@@ -9,6 +9,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
 import { CardModule } from 'primeng/card';
+import { TableModule } from 'primeng/table';
 
 @NgModule({
   imports: [CommonModule],
@@ -22,6 +23,7 @@ import { CardModule } from 'primeng/card';
     DialogModule,
     DividerModule,
     CardModule,
+    TableModule,
   ],
 })
 export class PrimeNgModule {}
