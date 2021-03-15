@@ -15,13 +15,14 @@ import { PrimeNgModule } from './primeng.module';
 import { NgxsModule } from '@ngxs/store';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
+import { ContentState } from './search/search.state';
 
 @NgModule({
   declarations: [AppComponent, HomePageComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgxsModule.forRoot(),
+    NgxsModule.forRoot([ContentState]),
     NgxsReduxDevtoolsPluginModule.forRoot(),
     NgxsLoggerPluginModule.forRoot(),
     PrimeNgModule,
