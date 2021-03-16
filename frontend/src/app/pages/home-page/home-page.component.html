@@ -1,1 +1,96 @@
 <p>home-page works!</p>
+
+<p-card styleClass="p-card-shadow">
+  <p-table
+    [columns]="selectedColumns"
+    [value]="warpContent"
+    [resizableColumns]="true"
+    [(selection)]="selectedContents"
+    styleClass="p-datatable-lg p-datatable-striped p-datatable-responsive-demo"
+  >
+    <ng-template pTemplate="caption">
+      <p-multiSelect
+        [options]="allColumns"
+        [(ngModel)]="selectedColumns"
+        optionLabel="header"
+        selectedItemsLabel="{0} columns selected"
+        [style]="{ minWidth: '300px' }"
+        placeholder="Choose Columns"
+      ></p-multiSelect>
+    </ng-template>
+
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th style="width: 3rem">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th
+          *ngFor="let col of columns"
+          pResizableColumn
+          [pSortableColumn]="col.field"
+        >
+          {{ col.header }}
+          <p-sortIcon [field]="col.field"></p-sortIcon>
+        </th>
+        <th style="width: 4rem"></th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <tr>
+        <td>
+          <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+        </td>
+        <td
+          *ngFor="let col of columns"
+          [pTooltip]="rowData[col.field]"
+          [showDelay]="500"
+        >
+          <span class="p-column-title">{{ col.header }}</span>
+          <div class="p-text-nowrap p-text-truncate">
+            {{ rowData[col.field] }}
+          </div>
+        </td>
+        <td>
+          <button
+            pButton
+            pRipple
+            type="button"
+            icon="pi pi-image"
+            class="p-button-rounded p-button-text"
+            (click)="displayDialog(rowData)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>
+
+<span *ngIf="selectedExampleRow">
+  <p-dialog
+    header="Example Card"
+    [(visible)]="isDisplayDialog"
+    [modal]="true"
+    [style]="{ width: '50vw' }"
+    [baseZIndex]="10000"
+    [draggable]="false"
+    [resizable]="false"
+    [dismissableMask]="true"
+  >
+    <div class="p-d-flex p-jc-center">
+      <p-card
+        [header]="selectedExampleRow.title"
+        [subheader]="selectedExampleRow.meta_site_name"
+        [style]="{ width: '360px' }"
+        styleClass="p-card-shadow"
+      >
+        <ng-template pTemplate="header">
+          <img [src]="selectedExampleRow.image" />
+        </ng-template>
+        <p>
+          {{ selectedExampleRow.description }}
+        </p>
+      </p-card>
+    </div>
+  </p-dialog>
+</span>
