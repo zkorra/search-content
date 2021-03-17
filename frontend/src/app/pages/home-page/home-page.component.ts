@@ -14,15 +14,11 @@ export class HomePageComponent implements OnInit {
   @Select(ContentState.getContent)
   content: any;
 
-  userParams = {
-    type: 'article',
-    cx: '07f7a2e8b0b662f50',
-    query: 'python',
-    // page: '',
-    // region: '',
-  };
+  keyword = '';
 
-  warpContent = [
+  engineId = '';
+
+  sswarpContent = [
     {
       title: '15 Free Python Courses for Beginners to Learn Online',
       description:
@@ -164,9 +160,11 @@ export class HomePageComponent implements OnInit {
     },
   ];
 
-  allColumns: any;
+  warpContent = [];
 
-  selectedContents: any[] = [];
+  allColumns: any[] = [];
+
+  selectedContentList: any[] = [];
 
   warpSelectedColumns: any[] = [];
 
@@ -174,14 +172,73 @@ export class HomePageComponent implements OnInit {
 
   isDisplayDialog = false;
 
-  innerWidth: any;
-  innerHeight: any;
+  page: any = '';
+
+  types = [
+    { key: 'Article', value: 'article' },
+    { key: 'Course', value: 'course' },
+  ];
+
+  selectedType: any;
+
+  regions = [
+    { key: 'All', value: '' },
+    { key: 'United States', value: 'countryUS' },
+    { key: 'Thailand', value: 'countryTH' },
+  ];
+
+  selectedRegion: any;
 
   constructor(private store: Store) {}
 
-  async ngOnInit(): Promise<void> {
-    // await this.store.dispatch(new SearchContent(this.userParams)).toPromise();
-    this.setInnerWidthHeightParameters();
+  ngOnInit(): void {}
+
+  @Input() get selectedColumns(): any[] {
+    return this.warpSelectedColumns;
+  }
+
+  set selectedColumns(value: any[]) {
+    // restore original order
+    this.warpSelectedColumns = this.allColumns.filter((column: any) =>
+      value.includes(column)
+    );
+  }
+
+  displayDialog(rowData: any): any {
+    this.isDisplayDialog = true;
+    this.selectedExampleRow = rowData;
+  }
+
+  async onSearch(
+    type: string,
+    engineId: string,
+    keyword: string,
+    page: string,
+    region: string
+  ): Promise<any> {
+    const userParams: any = {
+      type,
+      cx: engineId,
+      query: keyword,
+      page,
+      region,
+    };
+
+    Object.keys(userParams).forEach(
+      (key) =>
+        (userParams[key] === undefined || userParams[key] === '') &&
+        delete userParams[key]
+    );
+
+    await this.store.dispatch(new SearchContent(userParams)).toPromise();
+    console.log(userParams);
+    console.log(this.content);
+
+    await this.content.subscribe((data: any) => {
+      if (data) {
+        this.warpContent = data;
+      }
+    });
 
     this.allColumns = [
       ...this.warpContent.reduce(
@@ -203,26 +260,5 @@ export class HomePageComponent implements OnInit {
     this.allColumns = warpColumns;
 
     this.warpSelectedColumns = this.allColumns;
-  }
-
-  @Input() get selectedColumns(): any[] {
-    return this.warpSelectedColumns;
-  }
-
-  set selectedColumns(value: any[]) {
-    // restore original order
-    this.warpSelectedColumns = this.allColumns.filter((column: any) =>
-      value.includes(column)
-    );
-  }
-
-  displayDialog(rowData: any): any {
-    this.isDisplayDialog = true;
-    this.selectedExampleRow = rowData;
-  }
-
-  setInnerWidthHeightParameters(): any {
-    this.innerWidth = window.innerWidth;
-    this.innerHeight = window.innerHeight * 0.7;
   }
 }
