@@ -1,70 +1,106 @@
 <p>home-page works!</p>
 
-<p-card styleClass="p-card-shadow">
-  <p-table
-    [columns]="selectedColumns"
-    [value]="warpContent"
-    [resizableColumns]="true"
-    [(selection)]="selectedContents"
-    styleClass="p-datatable-lg p-datatable-striped p-datatable-responsive-demo"
-  >
-    <ng-template pTemplate="caption">
-      <p-multiSelect
-        [options]="allColumns"
-        [(ngModel)]="selectedColumns"
-        optionLabel="header"
-        selectedItemsLabel="{0} columns selected"
-        [style]="{ minWidth: '300px' }"
-        placeholder="Choose Columns"
-      ></p-multiSelect>
-    </ng-template>
+<span class="p-input-icon-left">
+  <i class="pi pi-search"></i>
+  <input type="text" pInputText placeholder="Keyword" [(ngModel)]="keyword" />
+</span>
 
-    <ng-template pTemplate="header" let-columns>
-      <tr>
-        <th style="width: 3rem">
-          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-        </th>
-        <th
-          *ngFor="let col of columns"
-          pResizableColumn
-          [pSortableColumn]="col.field"
-        >
-          {{ col.header }}
-          <p-sortIcon [field]="col.field"></p-sortIcon>
-        </th>
-        <th style="width: 4rem"></th>
-      </tr>
-    </ng-template>
+<p-dropdown
+  [options]="types"
+  [(ngModel)]="selectedType"
+  placeholder="Select Type"
+  optionLabel="key"
+  optionValue="value"
+></p-dropdown>
 
-    <ng-template pTemplate="body" let-rowData let-columns="columns">
-      <tr>
-        <td>
-          <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
-        </td>
-        <td
-          *ngFor="let col of columns"
-          [pTooltip]="rowData[col.field]"
-          [showDelay]="500"
-        >
-          <span class="p-column-title">{{ col.header }}</span>
-          <div class="p-text-nowrap p-text-truncate">
-            {{ rowData[col.field] }}
-          </div>
-        </td>
-        <td>
-          <button
-            pButton
-            pRipple
-            type="button"
-            icon="pi pi-image"
-            class="p-button-rounded p-button-text"
-            (click)="displayDialog(rowData)"
-          ></button>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
-</p-card>
+<span class="p-input-icon-left">
+  <i class="pi pi-search"></i>
+  <input type="text" pInputText placeholder="id" [(ngModel)]="engineId" />
+</span>
+
+<span class="p-input-icon-left">
+  <i class="pi pi-search"></i>
+  <input type="text" pInputText placeholder="page" [(ngModel)]="page" />
+</span>
+
+<p-dropdown
+  [options]="regions"
+  [(ngModel)]="selectedRegion"
+  placeholder="Select Regoin"
+  optionLabel="key"
+  optionValue="value"
+></p-dropdown>
+
+<p-button
+  label="Submit"
+  icon="pi pi-check"
+  iconPos="right"
+  (click)="onSearch(selectedType, engineId, keyword, page, selectedRegion)"
+></p-button>
+
+<p-table
+  [columns]="selectedColumns"
+  [value]="warpContent"
+  [resizableColumns]="true"
+  [(selection)]="selectedContentList"
+  styleClass="p-datatable-lg p-datatable-gridlines p-datatable-striped p-datatable-responsive-demo"
+>
+  <ng-template pTemplate="caption">
+    <p-multiSelect
+      [options]="allColumns"
+      [(ngModel)]="selectedColumns"
+      optionLabel="header"
+      selectedItemsLabel="{0} columns selected"
+      [style]="{ minWidth: '300px' }"
+      placeholder="Choose Columns"
+    ></p-multiSelect>
+  </ng-template>
+
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th
+        *ngFor="let col of columns"
+        pResizableColumn
+        [pSortableColumn]="col.field"
+      >
+        {{ col.header }}
+        <p-sortIcon [field]="col.field"></p-sortIcon>
+      </th>
+      <th style="width: 4rem"></th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+      </td>
+      <td
+        *ngFor="let col of columns"
+        [pTooltip]="rowData[col.field]"
+        [showDelay]="500"
+      >
+        <span class="p-column-title">{{ col.header }}</span>
+        <div class="p-text-nowrap p-text-truncate">
+          {{ rowData[col.field] }}
+        </div>
+      </td>
+      <td>
+        <button
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-image"
+          class="p-button-rounded p-button-text"
+          (click)="displayDialog(rowData)"
+        ></button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
 
 <span *ngIf="selectedExampleRow">
   <p-dialog
