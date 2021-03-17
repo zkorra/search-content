@@ -110,9 +110,9 @@ def cleanArticleDataframe(dataframe):
         'cse_url',
         'image',
         'date',
-        'meta_article_author',
+        # 'meta_article_author',
         'meta_author',
-        'meta_section',
+        # 'meta_section',
         'meta_site_name',
         'meta_type']]
 
