@@ -9,9 +9,9 @@ export class SearchService {
 
   allResults: any = [];
 
-  fetchCustomSearch(userParams: any): any {
+  fetchCustomSearch(searchParams: any): any {
     let params = new HttpParams();
-    params = userParams;
+    params = searchParams;
 
     return this.http.get<any>(`http://127.0.0.1:8000/fetch`, { params });
   }

@@ -5,14 +5,14 @@ import { SearchService } from './search.service';
 import { tap } from 'rxjs/operators';
 
 export class ContentStateModel {
-  content: any;
+  contentList: any;
 }
 
 @Injectable()
 @State<ContentStateModel>({
   name: 'content',
   defaults: {
-    content: null,
+    contentList: null,
   },
 })
 export class ContentState {
@@ -20,20 +20,20 @@ export class ContentState {
 
   @Selector()
   static getContent(state: ContentStateModel): any {
-    return state.content;
+    return state.contentList;
   }
 
   @Action(SearchContent)
   searchContent(
     { getState, setState }: StateContext<ContentStateModel>,
-    { userParams }: SearchContent
+    { searchParams }: SearchContent
   ): any {
-    return this.searchService.fetchCustomSearch(userParams).pipe(
+    return this.searchService.fetchCustomSearch(searchParams).pipe(
       tap((result) => {
         const state = getState();
         setState({
           ...state,
-          content: result,
+          contentList: result,
         });
       })
     );
