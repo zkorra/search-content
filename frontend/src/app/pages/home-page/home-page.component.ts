@@ -1,5 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
-
+import {
+  Validators,
+  FormControl,
+  FormGroup,
+  FormBuilder,
+} from '@angular/forms';
 import { ContentState } from '../../search/search.state';
 import { SearchContent } from '../../search/search.action';
 import { Select, Store } from '@ngxs/store';
@@ -12,11 +17,11 @@ import { Observable } from 'rxjs';
 })
 export class HomePageComponent implements OnInit {
   @Select(ContentState.getContent)
-  content: any;
+  contentList: any;
 
-  keyword = '';
+  searchform!: FormGroup;
 
-  engineId = '';
+  // cx 07f7a2e8b0b662f50
 
   sswarpContent = [
     {
@@ -172,14 +177,10 @@ export class HomePageComponent implements OnInit {
 
   isDisplayDialog = false;
 
-  page: any = '';
-
   types = [
     { key: 'Article', value: 'article' },
     { key: 'Course', value: 'course' },
   ];
-
-  selectedType: any;
 
   regions = [
     { key: 'All', value: '' },
@@ -187,11 +188,39 @@ export class HomePageComponent implements OnInit {
     { key: 'Thailand', value: 'countryTH' },
   ];
 
-  selectedRegion: any;
+  constructor(
+    private store: Store,
+    private fb: FormBuilder // private messageService: MessageService
+  ) {}
 
-  constructor(private store: Store) {}
+  ngOnInit(): void {
+    this.searchform = this.fb.group({
+      contentType: new FormControl('', Validators.required),
+      searchEngineId: new FormControl('', Validators.required),
+      keyword: new FormControl('', Validators.required),
+      page: new FormControl(''),
+      region: new FormControl(''),
+    });
 
-  ngOnInit(): void {}
+    // this.allColumns = [
+    //   ...this.sswarpContent.reduce(
+    //     (set, object) => (
+    //       Object.keys(object).forEach((key) => set.add(key)), set
+    //     ),
+    //     new Set()
+    //   ),
+    // ];
+
+    // const warpColumns: any[] = [];
+    // this.allColumns.forEach((element: any) => {
+    //   warpColumns.push({
+    //     field: element,
+    //     header: element[0].toUpperCase() + element.slice(1),
+    //   });
+    // });
+    // this.allColumns = warpColumns;
+    // this.warpSelectedColumns = this.allColumns;
+  }
 
   @Input() get selectedColumns(): any[] {
     return this.warpSelectedColumns;
@@ -209,56 +238,60 @@ export class HomePageComponent implements OnInit {
     this.selectedExampleRow = rowData;
   }
 
-  async onSearch(
-    type: string,
-    engineId: string,
-    keyword: string,
-    page: string,
-    region: string
-  ): Promise<any> {
-    const userParams: any = {
-      type,
-      cx: engineId,
-      query: keyword,
-      page,
-      region,
-    };
+  async onSubmit(value: any): Promise<void> {
+    this.searchform.controls.contentType.markAsDirty();
+    this.searchform.controls.searchEngineId.markAsDirty();
+    this.searchform.controls.keyword.markAsDirty();
 
-    Object.keys(userParams).forEach(
-      (key) =>
-        (userParams[key] === undefined || userParams[key] === '') &&
-        delete userParams[key]
-    );
+    if (this.searchform.valid) {
+      const {
+        contentType,
+        searchEngineId,
+        keyword,
+        page,
+        region,
+      } = this.searchform.value;
 
-    await this.store.dispatch(new SearchContent(userParams)).toPromise();
-    console.log(userParams);
-    console.log(this.content);
+      const searchParams: any = {
+        type: contentType,
+        cx: searchEngineId,
+        query: keyword,
+        page,
+        region,
+      };
 
-    await this.content.subscribe((data: any) => {
-      if (data) {
-        this.warpContent = data;
-      }
-    });
+      Object.keys(searchParams).forEach(
+        (key) =>
+          (searchParams[key] === undefined || searchParams[key] === '') &&
+          delete searchParams[key]
+      );
 
-    this.allColumns = [
-      ...this.warpContent.reduce(
-        (set, object) => (
-          Object.keys(object).forEach((key) => set.add(key)), set
-        ),
-        new Set()
-      ),
-    ];
+      await this.store.dispatch(new SearchContent(searchParams)).toPromise();
 
-    const warpColumns: any[] = [];
-    this.allColumns.forEach((element: any) => {
-      warpColumns.push({
-        field: element,
-        header: element[0].toUpperCase() + element.slice(1),
+      await this.contentList.subscribe((data: any) => {
+        if (data) {
+          this.warpContent = data;
+        }
       });
-    });
 
-    this.allColumns = warpColumns;
+      this.allColumns = [
+        ...this.warpContent.reduce(
+          (set, object) => (
+            Object.keys(object).forEach((key) => set.add(key)), set
+          ),
+          new Set()
+        ),
+      ];
 
-    this.warpSelectedColumns = this.allColumns;
+      const warpColumns: any[] = [];
+      this.allColumns.forEach((element: any) => {
+        warpColumns.push({
+          field: element,
+          header: element[0].toUpperCase() + element.slice(1),
+        });
+      });
+      this.allColumns = warpColumns;
+      this.warpSelectedColumns = this.allColumns;
+    }
   }
 }
