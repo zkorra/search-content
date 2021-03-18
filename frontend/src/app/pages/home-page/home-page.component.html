@@ -1,47 +1,112 @@
-<p>home-page works!</p>
+<form [formGroup]="searchform" (ngSubmit)="onSubmit(searchform.value)">
+  <div class="p-grid p-fluid p-jc-center p-ai-end vertical-container p-m-1">
+    <div class="p-col-12 p-md-4">
+      <label>
+        Keyword
+        <small class="p-error">
+          <span>*</span>
+          <span
+            *ngIf="
+              !searchform.controls['keyword'].valid &&
+              searchform.controls['keyword'].dirty
+            "
+            >required</span
+          >
+        </small>
+      </label>
+      <input type="text" pInputText formControlName="keyword" />
+    </div>
 
-<span class="p-input-icon-left">
-  <i class="pi pi-search"></i>
-  <input type="text" pInputText placeholder="Keyword" [(ngModel)]="keyword" />
-</span>
+    <div class="p-col-12 p-md-2">
+      <label>
+        Content Type
+        <small class="p-error">
+          <span>*</span>
+          <span
+            *ngIf="
+              !searchform.controls['contentType'].valid &&
+              searchform.controls['contentType'].dirty
+            "
+            >required</span
+          >
+        </small>
+      </label>
 
-<p-dropdown
-  [options]="types"
-  [(ngModel)]="selectedType"
-  placeholder="Select Type"
-  optionLabel="key"
-  optionValue="value"
-></p-dropdown>
+      <p-dropdown
+        [options]="types"
+        [(ngModel)]="searchform.value.contentType"
+        placeholder="Select"
+        optionLabel="key"
+        optionValue="value"
+        formControlName="contentType"
+      ></p-dropdown>
+    </div>
 
-<span class="p-input-icon-left">
-  <i class="pi pi-search"></i>
-  <input type="text" pInputText placeholder="id" [(ngModel)]="engineId" />
-</span>
+    <div class="p-col-12 p-md-2">
+      <label>
+        Search engine ID
+        <i
+          class="pi pi-question-circle"
+          pTooltip="Search engine ID in Google Programmable Search."
+          style="font-size: 0.75rem"
+        ></i>
+        <small class="p-error p-pl-1">
+          <span>*</span>
+          <span
+            *ngIf="
+              !searchform.controls['searchEngineId'].valid &&
+              searchform.controls['searchEngineId'].dirty
+            "
+            >required</span
+          >
+        </small>
+      </label>
+      <input type="text" pInputText formControlName="searchEngineId" />
+    </div>
 
-<span class="p-input-icon-left">
-  <i class="pi pi-search"></i>
-  <input type="text" pInputText placeholder="page" [(ngModel)]="page" />
-</span>
+    <div class="p-col-12 p-md-1">
+      <label>
+        Page
+        <i
+          class="pi pi-question-circle"
+          pTooltip="The default page is first. And maximum results per page is 10."
+          style="font-size: 0.75rem"
+        ></i
+      ></label>
+      <input type="text" pInputText placeholder="1" formControlName="page" />
+    </div>
 
-<p-dropdown
-  [options]="regions"
-  [(ngModel)]="selectedRegion"
-  placeholder="Select Regoin"
-  optionLabel="key"
-  optionValue="value"
-></p-dropdown>
+    <div class="p-col-12 p-md-2">
+      <label>Region</label>
+      <p-dropdown
+        [options]="regions"
+        [(ngModel)]="searchform.value.region"
+        placeholder="Select"
+        optionLabel="key"
+        optionValue="value"
+        formControlName="region"
+      ></p-dropdown>
+    </div>
 
-<p-button
-  label="Submit"
-  icon="pi pi-check"
-  iconPos="right"
-  (click)="onSearch(selectedType, engineId, keyword, page, selectedRegion)"
-></p-button>
+    <div class="p-col-4 p-md-1">
+      <p-button
+        pRipple
+        styleClass="p-button-sm"
+        type="submit"
+        label="Search"
+        icon="pi pi-search"
+        iconPos="left"
+      ></p-button>
+    </div>
+  </div>
+</form>
 
 <p-table
+  #contentTable
   [columns]="selectedColumns"
   [value]="warpContent"
-  [resizableColumns]="true"
+  [resizableColumns]="false"
+  [autoLayout]="true"
   [(selection)]="selectedContentList"
   styleClass="p-datatable-lg p-datatable-gridlines p-datatable-striped p-datatable-responsive-demo"
 >
@@ -58,9 +123,10 @@
 
   <ng-template pTemplate="header" let-columns>
     <tr>
-      <th style="width: 3rem">
+      <th style="width: 4rem">
         <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
       </th>
+      <th style="width: 4rem"></th>
       <th
         *ngFor="let col of columns"
         pResizableColumn
@@ -69,7 +135,6 @@
         {{ col.header }}
         <p-sortIcon [field]="col.field"></p-sortIcon>
       </th>
-      <th style="width: 4rem"></th>
     </tr>
   </ng-template>
 
@@ -77,16 +142,6 @@
     <tr>
       <td>
         <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
-      </td>
-      <td
-        *ngFor="let col of columns"
-        [pTooltip]="rowData[col.field]"
-        [showDelay]="500"
-      >
-        <span class="p-column-title">{{ col.header }}</span>
-        <div class="p-text-nowrap p-text-truncate">
-          {{ rowData[col.field] }}
-        </div>
       </td>
       <td>
         <button
@@ -98,13 +153,23 @@
           (click)="displayDialog(rowData)"
         ></button>
       </td>
+      <td
+        *ngFor="let col of columns"
+        [pTooltip]="rowData[col.field]"
+        [showDelay]="500"
+      >
+        <span class="p-column-title">{{ col.header }}</span>
+        <!-- <div class="p-text-nowrap p-text-truncate"> -->
+        {{ rowData[col.field] }}
+        <!-- </div> -->
+      </td>
     </tr>
   </ng-template>
 </p-table>
 
 <span *ngIf="selectedExampleRow">
   <p-dialog
-    header="Example Card"
+    header="Example Content Card"
     [(visible)]="isDisplayDialog"
     [modal]="true"
     [style]="{ width: '50vw' }"
@@ -113,12 +178,12 @@
     [resizable]="false"
     [dismissableMask]="true"
   >
-    <div class="p-d-flex p-jc-center">
+    <div class="p-d-flex p-jc-center p-mt-2">
       <p-card
         [header]="selectedExampleRow.title"
         [subheader]="selectedExampleRow.meta_site_name"
         [style]="{ width: '360px' }"
-        styleClass="p-card-shadow"
+        styleClass="p-shadow-8"
       >
         <ng-template pTemplate="header">
           <img [src]="selectedExampleRow.image" />
