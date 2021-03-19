@@ -18,6 +18,8 @@ import { ContextMenuModule } from 'primeng/contextmenu';
 import { DropdownModule } from 'primeng/dropdown';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TooltipModule } from 'primeng/tooltip';
+import { MessagesModule } from 'primeng/messages';
+import { MessageModule } from 'primeng/message';
 
 @NgModule({
   imports: [CommonModule],
@@ -40,6 +42,8 @@ import { TooltipModule } from 'primeng/tooltip';
     DropdownModule,
     ProgressBarModule,
     TooltipModule,
+    MessagesModule,
+    MessageModule,
   ],
 })
 export class PrimeNgModule {}
