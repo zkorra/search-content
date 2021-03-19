@@ -76,13 +76,13 @@ def index():
 
     response = fetchCustomSearch(searchEngineId, keyword, page, region)
 
-    if not response.get("items"):
-        raise APINotFound("No result found, try another keyword")
-
     if response.get("error"):
         searchEngineError = response.get("error")
         raise APICustomSearchEngineError(searchEngineError.get(
             "message"), searchEngineError.get("code"))
+    
+    if not response.get("items"):
+        raise APINotFound("No result found, try another keyword")
 
     if(contentType == "article"):
         filterArticle = filterArticleProperty(response)
