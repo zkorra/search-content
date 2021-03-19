@@ -138,8 +138,6 @@ def filterArticleProperty(data):
         'meta_type',
     ])
 
-    articleList = []
-
     # get the result items
     result_items = data.get("items")
 
