@@ -8,12 +8,15 @@ import {
 import { ContentState } from '../../search/search.state';
 import { SearchContent } from '../../search/search.action';
 import { Select, Store } from '@ngxs/store';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-home-page',
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.scss'],
+  providers: [MessageService],
 })
 export class HomePageComponent implements OnInit {
   @Select(ContentState.getContent)
@@ -190,7 +193,8 @@ export class HomePageComponent implements OnInit {
 
   constructor(
     private store: Store,
-    private fb: FormBuilder // private messageService: MessageService
+    private fb: FormBuilder,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
@@ -266,7 +270,18 @@ export class HomePageComponent implements OnInit {
           delete searchParams[key]
       );
 
-      await this.store.dispatch(new SearchContent(searchParams)).toPromise();
+      await this.store
+        .dispatch(new SearchContent(searchParams))
+        .pipe(
+          catchError(async (error) =>
+            this.messageService.add({
+              severity: 'error',
+              summary: `${error.status} - ${error.error.error}`,
+              detail: `${error.error.message}`,
+            })
+          )
+        )
+        .toPromise();
 
       await this.contentList.subscribe((data: any) => {
         if (data) {
