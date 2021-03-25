@@ -12,16 +12,26 @@ def clean_course_dataframe(dataframe):
 
     dataframe = replace_basic_columns(dataframe)
 
+    dataframe.rename(
+        columns={
+            'cse_url': 'url',
+            'meta_site_name': 'sitename',
+            'meta_type': 'type',
+            'meta_udemy_category': 'category',
+            'meta_udemy_price': 'price'
+        },
+        inplace=True
+    )
+
     dataframe_export = dataframe[[
         'title',
         'description',
         'url',
         'image',
-        'meta_site_name',
-        'meta_type',
-        'udemy_category',
-        # 'udemy_instructor',
-        'udemy_price'
+        'sitename',
+        'type',
+        'category',
+        'price'
     ]]
 
     return dataframe_export
@@ -32,7 +42,7 @@ def filter_course_property(data):
     dataframe = pd.DataFrame(columns=[
         'cse_title',
         'cse_description',
-        'url',
+        'cse_url',
         'cse_image',
         'meta_title',
         'meta_description',
@@ -41,7 +51,6 @@ def filter_course_property(data):
         'meta_site_name',
         'meta_type',
         'udemy_category',
-        'udemy_instructor',
         'udemy_price'
     ])
 
@@ -62,7 +71,7 @@ def filter_course_property(data):
             cse_description = result_item.get("snippet")
             #
             # extract the page url
-            url = result_item.get("link")
+            cse_url = result_item.get("link")
             #
             # extract image url if exists
             if "cse_image" in pagemap:
@@ -89,18 +98,15 @@ def filter_course_property(data):
             meta_type = metatags.get("og:type", "")
             #
             # get category from udemy
-            udemy_category = metatags.get("udemy_com:category", "")
-            #
-            # get instructor from udemy
-            udemy_instructor = metatags.get("udemy_com:instructor", "")
+            meta_udemy_category = metatags.get("udemy_com:category", "")
             #
             # get price from udemy
-            udemy_price = metatags.get("udemy_com:price", "")
+            meta_udemy_price = metatags.get("udemy_com:price", "")
 
             row = {
                 'cse_title': cse_title,
                 'cse_description': cse_description,
-                'url': url,
+                'cse_url': cse_url,
                 'cse_image': cse_image,
                 'meta_title': meta_title,
                 'meta_description': meta_description,
@@ -108,9 +114,8 @@ def filter_course_property(data):
                 'meta_image': meta_image,
                 'meta_site_name': meta_site_name,
                 'meta_type': meta_type,
-                'udemy_category': udemy_category,
-                'udemy_instructor': udemy_instructor,
-                'udemy_price': udemy_price
+                'meta_udemy_category': meta_udemy_category,
+                'meta_udemy_price': meta_udemy_price
             }
 
             dataframe = dataframe.append(row, ignore_index=True)
