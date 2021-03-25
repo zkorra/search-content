@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
-from custom_search_engine import fetchCustomSearch
-from article import filterArticleProperty
+from custom_search_engine import fetch_search_api
+from article import filter_article_property
+from course import filter_course_property
 import json
 import traceback
 
@@ -21,6 +22,7 @@ class APICustomSearchEngineError(APIError):
 class APIBadRequest(APIError):
     code = 400
     description = "Bad Request"
+
 
 class APINotFound(APIError):
     code = 404
@@ -74,21 +76,22 @@ def index():
     if not keyword:
         raise APIBadRequest('Keyword is missing')
 
-    response = fetchCustomSearch(searchEngineId, keyword, page, region)
+    response = fetch_search_api(searchEngineId, keyword, page, region)
 
     if response.get("error"):
         searchEngineError = response.get("error")
         raise APICustomSearchEngineError(searchEngineError.get(
             "message"), searchEngineError.get("code"))
-    
+
     if not response.get("items"):
         raise APINotFound("No result found, try another keyword")
 
     if(contentType == "article"):
-        filterArticle = filterArticleProperty(response)
+        filterArticle = filter_article_property(response)
         return Response(response=filterArticle, status=200, mimetype='application/json')
     elif(contentType == "course"):
-        pass
+        filterCourse = filter_course_property(response)
+        return Response(response=filterCourse, status=200, mimetype='application/json')
 
 
 if __name__ == '__main__':
