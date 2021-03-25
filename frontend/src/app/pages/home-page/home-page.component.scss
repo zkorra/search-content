@@ -41,3 +41,18 @@
 .p-field * {
   display: block;
 }
+
+.url-text {
+  display: block;
+  width: 120px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #4286f4;
+
+  &:hover {
+    cursor: pointer;
+    color: #18289c;
+    text-decoration: underline;
+  }
+}
