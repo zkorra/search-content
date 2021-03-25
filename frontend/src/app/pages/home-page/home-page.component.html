@@ -1,4 +1,5 @@
-<span>07f7a2e8b0b662f50</span>
+<div>article 07f7a2e8b0b662f50</div>
+<div>course 4c65dfd74f710b4c4</div>
 <p-toast position="top-center"></p-toast>
 <form [formGroup]="searchform" (ngSubmit)="onSubmit(searchform.value)">
   <div class="p-grid p-fluid p-jc-center p-ai-end vertical-container p-m-1">
@@ -104,23 +105,48 @@
 </form>
 
 <p-table
-  #contentTable
+  #dataTable
   [columns]="selectedColumns"
   [value]="warpContent"
   [resizableColumns]="false"
   [autoLayout]="true"
   [(selection)]="selectedContentList"
   styleClass="p-datatable-lg p-datatable-gridlines p-datatable-striped p-datatable-responsive-demo"
+  [exportFilename]="
+    searchform.value.contentType + '_' + searchform.value.keyword
+  "
 >
   <ng-template pTemplate="caption">
-    <p-multiSelect
-      [options]="allColumns"
-      [(ngModel)]="selectedColumns"
-      optionLabel="header"
-      selectedItemsLabel="{0} columns selected"
-      [style]="{ minWidth: '300px' }"
-      placeholder="Choose Columns"
-    ></p-multiSelect>
+    <div class="p-d-flex">
+      <p-multiSelect
+        [options]="allColumns"
+        [(ngModel)]="selectedColumns"
+        optionLabel="header"
+        selectedItemsLabel="{0} columns selected"
+        [style]="{ minWidth: '300px' }"
+        placeholder="Choose Columns"
+      ></p-multiSelect>
+      <button
+        type="button"
+        pButton
+        pRipple
+        icon="pi pi-file-o"
+        (click)="dataTable.exportCSV()"
+        class="p-ml-2"
+        pTooltip="Export all as CSV file"
+        tooltipPosition="bottom"
+      ></button>
+      <button
+        type="button"
+        pButton
+        pRipple
+        icon="pi pi-filter"
+        (click)="dataTable.exportCSV({ selectionOnly: true })"
+        class="p-button-info p-ml-auto"
+        pTooltip="Export selected rows"
+        tooltipPosition="left"
+      ></button>
+    </div>
   </ng-template>
 
   <ng-template pTemplate="header" let-columns>
@@ -129,13 +155,9 @@
         <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
       </th>
       <th style="width: 4rem"></th>
-      <th
-        *ngFor="let col of columns"
-        pResizableColumn
-        [pSortableColumn]="col.field"
-      >
+      <th *ngFor="let col of columns" pResizableColumn>
         {{ col.header }}
-        <p-sortIcon [field]="col.field"></p-sortIcon>
+        <!-- <p-sortIcon [field]="col.field"></p-sortIcon> -->
       </th>
     </tr>
   </ng-template>
@@ -162,8 +184,19 @@
       >
         <span class="p-column-title">{{ col.header }}</span>
         <!-- <div class="p-text-nowrap p-text-truncate"> -->
-        {{ rowData[col.field] }}
+        <!-- {{ rowData[col.field] }} -->
         <!-- </div> -->
+        <span
+          *ngIf="
+            col.field === 'url' || col.field === 'image';
+            else templateName
+          "
+          (click)="goToExternalWebsite(rowData[col.field])"
+          class="url-text"
+        >
+          {{ rowData[col.field] }}
+        </span>
+        <ng-template #templateName>{{ rowData[col.field] }}</ng-template>
       </td>
     </tr>
   </ng-template>
