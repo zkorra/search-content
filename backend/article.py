@@ -29,17 +29,25 @@ def clean_article_dataframe(dataframe):
 
     dataframe = replace_published_date(dataframe)
 
+    dataframe.rename(
+        columns={
+            'cse_url': 'url',
+            'meta_author': 'author',
+            'meta_site_name': 'sitename',
+            'meta_type': 'type'
+        },
+        inplace=True
+    )
+
     dataframe_export = dataframe[[
         'title',
         'description',
         'url',
         'image',
         'date',
-        # 'meta_article_author',
-        'meta_author',
-        # 'meta_section',
-        'meta_site_name',
-        'meta_type']]
+        'author',
+        'sitename',
+        'type']]
 
     return dataframe_export
 
@@ -49,7 +57,7 @@ def filter_article_property(data):
     dataframe = pd.DataFrame(columns=[
         'cse_title',
         'cse_description',
-        'url',
+        'cse_url',
         'cse_image',
         'meta_title',
         'meta_description',
@@ -80,7 +88,7 @@ def filter_article_property(data):
             cse_description = result_item.get("snippet")
             #
             # extract the page url
-            url = result_item.get("link")
+            cse_url = result_item.get("link")
             #
             # extract image url if exists
             if "cse_image" in pagemap:
@@ -105,13 +113,7 @@ def filter_article_property(data):
                 "article:published_time", "")
             #
             # get meta author
-            meta_article_author = metatags.get("article:author", "")
-            #
-            # get meta author
             meta_author = metatags.get("author", "")
-            #
-            # get meta article section
-            meta_section = metatags.get("article:section", "")
             #
             # get meta website name
             meta_site_name = metatags.get("og:site_name", "")
@@ -122,16 +124,14 @@ def filter_article_property(data):
             row = {
                 'cse_title': cse_title,
                 'cse_description': cse_description,
-                'url': url,
+                'cse_url': cse_url,
                 'cse_image': cse_image,
                 'meta_title': meta_title,
                 'meta_description': meta_description,
                 'meta_url': meta_url,
                 'meta_image': meta_image,
                 'meta_article_published_time': meta_article_published_time,
-                'meta_article_author': meta_article_author,
                 'meta_author': meta_author,
-                'meta_section': meta_section,
                 'meta_site_name': meta_site_name,
                 'meta_type': meta_type,
             }
