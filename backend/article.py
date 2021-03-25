@@ -5,6 +5,7 @@ import datetime
 from dateutil.parser import parse
 import tldextract
 import json
+from dataframe_cleaner import replace_basic_columns, replace_published_date
 
 
 def is_date(string, fuzzy=False):
@@ -22,92 +23,16 @@ def is_date(string, fuzzy=False):
         return False
 
 
-def cleanArticleDataframe(dataframe):
+def clean_article_dataframe(dataframe):
 
-    pd.set_option('mode.chained_assignment', None)
+    dataframe = replace_basic_columns(dataframe)
 
-    # SELECT PROPERTIES
-    # cse_title
-    # cse_description
-    # cse_url
-    # cse_image
-    # meta_title
-    # meta_description
-    # meta_url
-    # meta_image
-    # meta_article_published_time
-    # meta_article_author
-    # meta_author
-    # meta_section
-    # meta_site_name
-    # meta_type
-
-    month_dict = {
-        "ม.ค.": "Jan",
-        "ก.พ.": "Feb",
-        "มี.ค.": "Mar",
-        "เม.ย.": "Apr",
-        "พ.ค.": "May",
-        "มิ.ย.": "Jun",
-        "ก.ค.": "Jul",
-        "ส.ค.": "Aug",
-        "ก.ย.": "Sep",
-        "ต.ค.": "Oct",
-        "พ.ย.": "Nov",
-        "ธ.ค.": "Dec",
-    }
-
-    dataframe["title"] = np.nan
-    dataframe["description"] = np.nan
-    dataframe["image"] = np.nan
-    dataframe["date"] = np.nan
-
-    dataframe['meta_article_published_time'] = pd.to_datetime(
-        dataframe['meta_article_published_time'], format='%Y-%m-%d %H:%M:%S', utc=True).dt.strftime('%d/%m/%Y')
-
-    for index in dataframe.index:
-
-        if(pd.isnull(dataframe['meta_title'][index])):
-            dataframe['title'][index] = dataframe['cse_title'][index]
-        else:
-            dataframe['title'][index] = dataframe['meta_title'][index]
-
-        if(pd.isnull(dataframe['meta_description'][index])):
-            dataframe['description'][index] = dataframe['cse_description'][index]
-        else:
-            dataframe['description'][index] = dataframe['meta_description'][index]
-
-        if(pd.isnull(dataframe['meta_site_name'][index])):
-            dataframe['meta_site_name'][index] = tldextract.extract(
-                dataframe['cse_url'][index]).domain.capitalize()
-
-        if(pd.isnull(dataframe['meta_image'][index])):
-            dataframe['image'][index] = dataframe['cse_image'][index]
-        else:
-            dataframe['image'][index] = dataframe['meta_image'][index]
-            # if(dataframe_new['image'][index][0] == '/' and dataframe_new['image'][index][1] == '/'):
-            #     dataframe_new['image'][index] = dataframe_new['image'][index].replace(
-            #         "//", "https://")
-
-        if(pd.isnull(dataframe['meta_article_published_time'][index])):
-            date = dataframe['cse_description'][index].split(' ... ')[
-                0]
-            for word, initial in month_dict.items():
-                date = date.replace(word, initial)
-            if is_date(date):
-                dataframe['date'][index] = date
-            else:
-                dataframe['date'][index] = np.nan
-        else:
-            dataframe['date'][index] = dataframe['meta_article_published_time'][index]
-
-    dataframe['date'] = pd.to_datetime(
-        dataframe['date']).dt.strftime('%d/%m/%Y')
+    dataframe = replace_published_date(dataframe)
 
     dataframe_export = dataframe[[
         'title',
         'description',
-        'cse_url',
+        'url',
         'image',
         'date',
         # 'meta_article_author',
@@ -119,12 +44,12 @@ def cleanArticleDataframe(dataframe):
     return dataframe_export
 
 
-def filterArticleProperty(data):
+def filter_article_property(data):
 
     dataframe = pd.DataFrame(columns=[
         'cse_title',
         'cse_description',
-        'cse_url',
+        'url',
         'cse_image',
         'meta_title',
         'meta_description',
@@ -155,7 +80,7 @@ def filterArticleProperty(data):
             cse_description = result_item.get("snippet")
             #
             # extract the page url
-            cse_url = result_item.get("link")
+            url = result_item.get("link")
             #
             # extract image url if exists
             if "cse_image" in pagemap:
@@ -197,7 +122,7 @@ def filterArticleProperty(data):
             row = {
                 'cse_title': cse_title,
                 'cse_description': cse_description,
-                'cse_url': cse_url,
+                'url': url,
                 'cse_image': cse_image,
                 'meta_title': meta_title,
                 'meta_description': meta_description,
@@ -213,6 +138,6 @@ def filterArticleProperty(data):
 
             dataframe = dataframe.append(row, ignore_index=True)
 
-        cleanedArticle = cleanArticleDataframe(dataframe)
+        cleaned_article = clean_article_dataframe(dataframe)
 
-    return cleanedArticle.to_json(orient='records')
+    return cleaned_article.to_json(orient='records')
