@@ -4,7 +4,7 @@ GOOGLE_API_KEY = "AIzaSyB6trExhF-mxOKdNQsAW-HkVOHBGV8W0R4"
 COUNT = 0
 
 
-def fetchCustomSearch(searchEngineId, keyword, page, region):
+def fetch_search_api(searchEngineId, keyword, page, region):
 
     REGION_PARAM = ""
 
