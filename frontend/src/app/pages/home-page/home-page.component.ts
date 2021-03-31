@@ -6,7 +6,7 @@ import {
   FormBuilder,
 } from '@angular/forms';
 import { ContentState } from '../../search/search.state';
-import { SearchContent } from '../../search/search.action';
+import { SearchContent, GetEngines } from '../../search/search.action';
 import { Select, Store } from '@ngxs/store';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -19,156 +19,19 @@ import { MessageService } from 'primeng/api';
   providers: [MessageService],
 })
 export class HomePageComponent implements OnInit {
-  @Select(ContentState.getContent)
-  contentList: any;
+  @Select(ContentState.getContentList)
+  contents: any;
 
-  searchform!: FormGroup;
+  @Select(ContentState.getEngineList)
+  engines: any;
 
-  // cx 07f7a2e8b0b662f50
+  searchForm!: FormGroup;
 
-  sswarpContent = [
-    {
-      title: '15 Free Python Courses for Beginners to Learn Online',
-      description:
-        'A curated list of some of the free online courses to learn Python.',
-      url:
-        'https://medium.com/swlh/5-free-python-courses-for-beginners-to-learn-online-e1ca90687caf',
-      image: 'https://miro.medium.com/max/840/1*RJMxLdTHqVBSijKmOO5MAg.jpeg',
-      date: '12/08/2020',
-      meta_article_author: 'https://javinpaul.medium.com',
-      meta_author: 'javinpaul',
-      meta_section: '',
-      meta_site_name: 'Medium',
-      meta_type: 'article',
-    },
-    {
-      title: 'Python: 7 Important Reasons Why You Should Use Python',
-      description:
-        'According to the latest TIOBE Programming Community Index, Python is one of the top 10 popular programming languages of 2017. Python is a\u2026',
-      url:
-        'https://medium.com/@mindfiresolutions.usa/python-7-important-reasons-why-you-should-use-python-5801a98a0d0b',
-      image: 'https://miro.medium.com/max/1140/1*WizgUsFeUgISS7vkFl4dEA.jpeg',
-      date: '10/03/2017',
-      meta_article_author: 'https://medium.com/@mindfiresolutions.usa',
-      meta_author: 'Mindfire Solutions',
-      meta_section: '',
-      meta_site_name: 'Medium',
-      meta_type: 'article',
-    },
-    {
-      title: '12 Websites to Learn Python Programming for FREE',
-      description:
-        'Hello guys, if you are here then let me first congratulate you for making the right decision to learn Python programming language, the\u2026',
-      url:
-        'https://medium.com/javarevisited/10-free-python-tutorials-and-courses-from-google-microsoft-and-coursera-for-beginners-96b9ad20b4e6',
-      image: 'https://miro.medium.com/max/840/1*RJMxLdTHqVBSijKmOO5MAg.jpeg',
-      date: '12/09/2020',
-      meta_article_author: 'https://javinpaul.medium.com',
-      meta_author: 'javinpaul',
-      meta_section: '',
-      meta_site_name: 'Medium',
-      meta_type: 'article',
-    },
-    {
-      title: 'Python at Netflix',
-      description:
-        'By Pythonistas at Netflix, coordinated by Amjith Ramanujam and edited by Ellen Livengood',
-      url:
-        'https://medium.com/netflix-techblog/python-at-netflix-bba45dae649e',
-      image: 'https://miro.medium.com/max/601/1*PPIp7twJJUknfohZqtL8pQ.png',
-      date: '30/04/2019',
-      meta_article_author: 'https://netflixtechblog.medium.com',
-      meta_author: 'Netflix Technology Blog',
-      meta_section: '',
-      meta_site_name: 'Medium',
-      meta_type: 'article',
-    },
-    {
-      title: 'Python Lists and List Manipulation',
-      description:
-        'Before starting, I should mention that the code in this blog post and in the video above is available on my github.',
-      url:
-        'https://medium.com/@GalarnykMichael/python-basics-6-lists-and-list-manipulation-a56be62b1f95',
-      image: 'https://miro.medium.com/max/310/1*noxS-kGyde8dhaTXfKMTKg.png',
-      date: '11/12/2019',
-      meta_article_author: 'https://medium.com/@GalarnykMichael',
-      meta_author: 'Michael Galarnyk',
-      meta_section: '',
-      meta_site_name: 'Medium',
-      meta_type: 'article',
-    },
-    {
-      title: 'code_swarm - Python',
-      description:
-        'Visualizing the commit history of the Python scripting language project.  Project page: http://vis.cs.ucdavis.edu/~ogawa/codeswarm/  Open source: http://code.google.com/p/codeswarm  Music: "Overflight"\u2026',
-      url: 'https://medium.com/media/176efd03c2b4aac3c843fc47c3fa8515/href',
-      image:
-        'https://i.vimeocdn.com/filter/overlay?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F21009317_1280x965.jpg&src1=https%3A%2F%2Ff.vimeocdn.com%2Fimages_v6%2Fshare%2Fplay_icon_overlay.png',
-      date: '30/05/2008',
-      meta_article_author: '',
-      meta_author: '',
-      meta_section: '',
-      meta_site_name: 'Vimeo',
-      meta_type: 'video.other',
-    },
-    {
-      title: 'Python at Netflix',
-      description:
-        'Python\u2019s footprint in our environment continues to increase',
-      url:
-        'https://medium.com/netflix-techblog/python-at-netflix-86b6028b3b3e',
-      image: '',
-      date: '20/09/2018',
-      meta_article_author: 'https://netflixtechblog.medium.com',
-      meta_author: 'Netflix Technology Blog',
-      meta_section: '',
-      meta_site_name: 'Medium',
-      meta_type: 'article',
-    },
-    {
-      title: 'PCA using Python (scikit-learn)',
-      description:
-        'My last tutorial went over Logistic Regression using Python. One of the things learned was that you can speed up the fitting of a machine learning algorithm by changing the optimization algorithm. A\u2026',
-      url:
-        'https://medium.com/@GalarnykMichael/pca-using-python-scikit-learn-e653f8989e60',
-      image: 'https://miro.medium.com/max/1050/1*Gob8ZbScyM7hHUHjvrMJYg.png',
-      date: '02/03/2021',
-      meta_article_author: 'https://medium.com/@GalarnykMichael',
-      meta_author: 'Michael Galarnyk',
-      meta_section: '',
-      meta_site_name: 'Medium',
-      meta_type: 'article',
-    },
-    {
-      title: 'Hypermodern Python',
-      description:
-        'A guide to modern Python tooling with a focus on simplicity and minimalism. This chapter covers setting up a project using Poetry and\u2026',
-      url: 'https://medium.com/@cjolowicz/hypermodern-python-d44485d9d769',
-      image: 'https://miro.medium.com/max/1200/1*F1PgdlB3Ez-xek3oU7fQzw.jpeg',
-      date: '26/03/2020',
-      meta_article_author: 'https://medium.com/@cjolowicz',
-      meta_author: 'Claudio Jolowicz',
-      meta_section: '',
-      meta_site_name: 'Medium',
-      meta_type: 'article',
-    },
-    {
-      title: 'Building A Logistic Regression in Python, Step by Step',
-      description:
-        'Logistic Regression is a Machine Learning classification algorithm that is used to predict the probability of a categorical dependent\u2026',
-      url:
-        'https://medium.com/towards-data-science/building-a-logistic-regression-in-python-step-by-step-becd4d56c9c8',
-      image: 'https://miro.medium.com/max/1163/1*LrA_HrggXM_BDfippYTVxQ.png',
-      date: '27/02/2019',
-      meta_article_author: 'https://actsusanli.medium.com',
-      meta_author: 'Susan Li',
-      meta_section: '',
-      meta_site_name: 'Medium',
-      meta_type: 'article',
-    },
-  ];
+  searchedParams: any;
 
-  warpContent = [];
+  engineList = [];
+
+  contentList = [];
 
   allColumns: any[] = [];
 
@@ -187,8 +50,8 @@ export class HomePageComponent implements OnInit {
 
   regions = [
     { key: 'All', value: '' },
-    { key: 'United States', value: 'countryUS' },
     { key: 'Thailand', value: 'countryTH' },
+    { key: 'United States', value: 'countryUS' },
   ];
 
   constructor(
@@ -197,33 +60,131 @@ export class HomePageComponent implements OnInit {
     private messageService: MessageService
   ) {}
 
-  ngOnInit(): void {
-    this.searchform = this.fb.group({
+  async ngOnInit(): Promise<void> {
+    this.fetchEngines();
+
+    this.searchForm = this.fb.group({
       contentType: new FormControl('', Validators.required),
       searchEngineId: new FormControl('', Validators.required),
       keyword: new FormControl('', Validators.required),
       page: new FormControl(''),
       region: new FormControl(''),
     });
+  }
 
-    // this.allColumns = [
-    //   ...this.warpContent.reduce(
-    //     (set, object) => (
-    //       Object.keys(object).forEach((key) => set.add(key)), set
-    //     ),
-    //     new Set()
-    //   ),
-    // ];
+  async fetchEngines(): Promise<void> {
+    await this.store.dispatch(new GetEngines()).toPromise();
 
-    // const warpColumns: any[] = [];
-    // this.allColumns.forEach((element: any) => {
-    //   warpColumns.push({
-    //     field: element,
-    //     header: element[0].toUpperCase() + element.slice(1),
-    //   });
-    // });
-    // this.allColumns = warpColumns;
-    // this.warpSelectedColumns = this.allColumns;
+    await this.engines.subscribe((data: any) => {
+      if (data) {
+        this.engineList = data;
+      }
+    });
+  }
+
+  async searchContent(params: any): Promise<void> {
+    await this.store
+      .dispatch(new SearchContent(params))
+      .pipe(
+        catchError(async (error) =>
+          this.messageService.add({
+            severity: 'error',
+            summary: `${error.status} - ${error.error.error}`,
+            detail: `${error.error.message}`,
+          })
+        )
+      )
+      .toPromise();
+
+    await this.contents.subscribe((data: any) => {
+      if (data) {
+        this.contentList = data;
+      }
+    });
+  }
+
+  async onSubmit(value: any): Promise<void> {
+    this.selectedContentList = [];
+
+    this.searchForm.controls.contentType.markAsDirty();
+    this.searchForm.controls.searchEngineId.markAsDirty();
+    this.searchForm.controls.keyword.markAsDirty();
+
+    if (this.searchForm.valid) {
+      const {
+        contentType,
+        searchEngineId,
+        keyword,
+        page,
+        region,
+      } = this.searchForm.value;
+
+      this.searchedParams = this.searchForm.value;
+
+      const searchParams: any = {
+        type: contentType,
+        cx: searchEngineId,
+        query: keyword,
+        page,
+        region,
+      };
+
+      this.removeEmptyProperty(searchParams);
+
+      await this.searchContent(searchParams);
+
+      const uniqueKeys = this.filterUniqueKey(this.contentList);
+
+      console.log(this.allColumns);
+
+      const warpColumns: any[] = [];
+
+      uniqueKeys.forEach((key: any) => {
+        warpColumns.push({
+          field: key,
+          header: key[0].toUpperCase() + key.slice(1),
+        });
+      });
+
+      this.allColumns = warpColumns;
+      this.warpSelectedColumns = this.allColumns;
+    }
+  }
+
+  displayDialog(rowData: any): void {
+    this.isDisplayDialog = true;
+    this.selectedExampleRow = rowData;
+  }
+
+  removeEmptyProperty(object: any): any {
+    return Object.keys(object).forEach(
+      (key) =>
+        (object[key] === undefined || object[key] === '') && delete object[key]
+    );
+  }
+
+  filterUniqueKey(arrayObject: any[]): any {
+    return [
+      ...arrayObject.reduce(
+        (set, object) => (
+          Object.keys(object).forEach((key) => set.add(key)), set
+        ),
+        new Set()
+      ),
+    ];
+  }
+
+  onEngineChange(event: any): void {
+    const { originalEvent, value } = event;
+
+    // mouse event
+    if (originalEvent.detail === 1) {
+      const selectedEngine: any = this.engineList.find(
+        (engine: any) => engine.searchEngineId === value
+      );
+
+      this.searchForm.value.contentType = selectedEngine.contentType;
+    }
   }
 
   @Input() get selectedColumns(): any[] {
@@ -237,80 +198,7 @@ export class HomePageComponent implements OnInit {
     );
   }
 
-  displayDialog(rowData: any): any {
-    this.isDisplayDialog = true;
-    this.selectedExampleRow = rowData;
-  }
-
-  async onSubmit(value: any): Promise<void> {
-    this.searchform.controls.contentType.markAsDirty();
-    this.searchform.controls.searchEngineId.markAsDirty();
-    this.searchform.controls.keyword.markAsDirty();
-
-    if (this.searchform.valid) {
-      const {
-        contentType,
-        searchEngineId,
-        keyword,
-        page,
-        region,
-      } = this.searchform.value;
-
-      const searchParams: any = {
-        type: contentType,
-        cx: searchEngineId,
-        query: keyword,
-        page,
-        region,
-      };
-
-      Object.keys(searchParams).forEach(
-        (key) =>
-          (searchParams[key] === undefined || searchParams[key] === '') &&
-          delete searchParams[key]
-      );
-
-      await this.store
-        .dispatch(new SearchContent(searchParams))
-        .pipe(
-          catchError(async (error) =>
-            this.messageService.add({
-              severity: 'error',
-              summary: `${error.status} - ${error.error.error}`,
-              detail: `${error.error.message}`,
-            })
-          )
-        )
-        .toPromise();
-
-      await this.contentList.subscribe((data: any) => {
-        if (data) {
-          this.warpContent = data;
-        }
-      });
-
-      this.allColumns = [
-        ...this.warpContent.reduce(
-          (set, object) => (
-            Object.keys(object).forEach((key) => set.add(key)), set
-          ),
-          new Set()
-        ),
-      ];
-
-      const warpColumns: any[] = [];
-      this.allColumns.forEach((element: any) => {
-        warpColumns.push({
-          field: element,
-          header: element[0].toUpperCase() + element.slice(1),
-        });
-      });
-      this.allColumns = warpColumns;
-      this.warpSelectedColumns = this.allColumns;
-    }
-  }
-
-  goToExternalWebsite(url: any): void {
+  goToExternalWebsite(url: string): void {
     window.open(url, '_blank');
   }
 }

@@ -1,7 +1,8 @@
-<div>article 07f7a2e8b0b662f50</div>
-<div>course 4c65dfd74f710b4c4</div>
 <p-toast position="top-center"></p-toast>
-<form [formGroup]="searchform" (ngSubmit)="onSubmit(searchform.value)">
+
+<!-- <span>{{ engineList | json }}</span> -->
+
+<form [formGroup]="searchForm" (ngSubmit)="onSubmit(searchForm.value)">
   <div class="p-grid p-fluid p-jc-center p-ai-end vertical-container p-m-1">
     <div class="p-col-12 p-md-4">
       <label>
@@ -10,39 +11,14 @@
           <span>*</span>
           <span
             *ngIf="
-              !searchform.controls['keyword'].valid &&
-              searchform.controls['keyword'].dirty
+              !searchForm.controls['keyword'].valid &&
+              searchForm.controls['keyword'].dirty
             "
             >required</span
           >
         </small>
       </label>
       <input type="text" pInputText formControlName="keyword" />
-    </div>
-
-    <div class="p-col-12 p-md-2">
-      <label>
-        Content Type
-        <small class="p-error">
-          <span>*</span>
-          <span
-            *ngIf="
-              !searchform.controls['contentType'].valid &&
-              searchform.controls['contentType'].dirty
-            "
-            >required</span
-          >
-        </small>
-      </label>
-
-      <p-dropdown
-        [options]="types"
-        [(ngModel)]="searchform.value.contentType"
-        placeholder="Select"
-        optionLabel="key"
-        optionValue="value"
-        formControlName="contentType"
-      ></p-dropdown>
     </div>
 
     <div class="p-col-12 p-md-2">
@@ -57,14 +33,50 @@
           <span>*</span>
           <span
             *ngIf="
-              !searchform.controls['searchEngineId'].valid &&
-              searchform.controls['searchEngineId'].dirty
+              !searchForm.controls['searchEngineId'].valid &&
+              searchForm.controls['searchEngineId'].dirty
             "
             >required</span
           >
         </small>
       </label>
-      <input type="text" pInputText formControlName="searchEngineId" />
+
+      <p-dropdown
+        [options]="engineList"
+        [(ngModel)]="searchForm.value.searchEngineId"
+        [editable]="true"
+        (onChange)="onEngineChange($event)"
+        placeholder="Select"
+        optionLabel="name"
+        optionValue="searchEngineId"
+        formControlName="searchEngineId"
+      ></p-dropdown>
+      <!-- <input type="text" pInputText formControlName="searchEngineId" /> -->
+    </div>
+
+    <div class="p-col-12 p-md-2">
+      <label>
+        Content Type
+        <small class="p-error">
+          <span>*</span>
+          <span
+            *ngIf="
+              !searchForm.controls['contentType'].valid &&
+              searchForm.controls['contentType'].dirty
+            "
+            >required</span
+          >
+        </small>
+      </label>
+
+      <p-dropdown
+        [options]="types"
+        [(ngModel)]="searchForm.value.contentType"
+        placeholder="Select"
+        optionLabel="key"
+        optionValue="value"
+        formControlName="contentType"
+      ></p-dropdown>
     </div>
 
     <div class="p-col-12 p-md-1">
@@ -83,7 +95,7 @@
       <label>Region</label>
       <p-dropdown
         [options]="regions"
-        [(ngModel)]="searchform.value.region"
+        [(ngModel)]="searchForm.value.region"
         placeholder="Select"
         optionLabel="key"
         optionValue="value"
@@ -107,14 +119,12 @@
 <p-table
   #dataTable
   [columns]="selectedColumns"
-  [value]="warpContent"
+  [value]="contentList"
   [resizableColumns]="false"
   [autoLayout]="true"
   [(selection)]="selectedContentList"
   styleClass="p-datatable-lg p-datatable-gridlines p-datatable-striped p-datatable-responsive-demo"
-  [exportFilename]="
-    searchform.value.contentType + '_' + searchform.value.keyword
-  "
+  [exportFilename]="searchedParams?.contentType + '_' + searchedParams?.keyword"
 >
   <ng-template pTemplate="caption">
     <div class="p-d-flex">
