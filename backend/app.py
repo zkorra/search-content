@@ -1,9 +1,8 @@
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, send_file
 from flask_cors import CORS
 from custom_search_engine import fetch_search_api
 from article import filter_article_property
 from course import filter_course_property
-import json
 import traceback
 
 app = Flask(__name__)
@@ -92,6 +91,11 @@ def index():
     elif(contentType == "course"):
         filterCourse = filter_course_property(response)
         return Response(response=filterCourse, status=200, mimetype='application/json')
+
+
+@app.route('/engine', methods=['GET'])
+def fetch_engine_list():
+    return send_file('data/engine_list.json', cache_timeout=0), 200
 
 
 if __name__ == '__main__':
