@@ -3,3 +3,7 @@ export class SearchContent {
 
   constructor(public searchParams: {}) {}
 }
+
+export class GetEngines {
+  static readonly type = '[Content] Engines';
+}
