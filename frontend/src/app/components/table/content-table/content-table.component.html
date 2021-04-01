@@ -1,0 +1,135 @@
+<p-table
+  #dataTable
+  [columns]="selectedColumns"
+  [value]="contentList"
+  [resizableColumns]="false"
+  [autoLayout]="true"
+  [(selection)]="selectedContentList"
+  styleClass="p-datatable-lg p-datatable-gridlines p-datatable-striped p-datatable-responsive-demo"
+>
+  <ng-template pTemplate="caption">
+    <div class="p-d-flex">
+      <p-multiSelect
+        [options]="allColumns"
+        [(ngModel)]="selectedColumns"
+        optionLabel="header"
+        selectedItemsLabel="{0} columns selected"
+        [style]="{ minWidth: '300px' }"
+        placeholder="Choose Columns"
+      ></p-multiSelect>
+      <button
+        type="button"
+        pButton
+        pRipple
+        icon="pi pi-file-o"
+        (click)="
+          exportToCsv(
+            contentList,
+            searchParams?.contentType + '_' + searchParams?.keyword,
+            uniqueColumns
+          )
+        "
+        class="p-ml-2"
+        pTooltip="Export all as CSV file"
+        tooltipPosition="bottom"
+      ></button>
+      <button
+        type="button"
+        pButton
+        pRipple
+        icon="pi pi-filter"
+        (click)="
+          exportToCsv(
+            selectedContentList,
+            searchParams?.contentType + '_' + searchParams?.keyword,
+            uniqueColumns
+          )
+        "
+        class="p-button-info p-ml-auto"
+        pTooltip="Export selected rows"
+        tooltipPosition="left"
+      ></button>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th style="width: 4rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th style="width: 4rem"></th>
+      <th *ngFor="let col of columns" pResizableColumn>
+        {{ col.header }}
+        <!-- <p-sortIcon [field]="col.field"></p-sortIcon> -->
+      </th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+      </td>
+      <td>
+        <button
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-image"
+          class="p-button-rounded p-button-text"
+          (click)="displayExampleCardDialog(rowData)"
+        ></button>
+      </td>
+      <td
+        *ngFor="let col of columns"
+        [pTooltip]="rowData[col.field]"
+        [showDelay]="500"
+      >
+        <span class="p-column-title">{{ col.header }}</span>
+        <!-- <div class="p-text-nowrap p-text-truncate"> -->
+        <!-- {{ rowData[col.field] }} -->
+        <!-- </div> -->
+        <span
+          *ngIf="
+            col.field === 'url' || col.field === 'image';
+            else templateName
+          "
+          (click)="goToExternalWebsite(rowData[col.field])"
+          class="url-text"
+        >
+          {{ rowData[col.field] }}
+        </span>
+        <ng-template #templateName>{{ rowData[col.field] }}</ng-template>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<span *ngIf="selectedExampleRow">
+  <p-dialog
+    header="Example Content Card"
+    [(visible)]="isExampleCardDialogOpen"
+    [modal]="true"
+    [style]="{ width: '50vw' }"
+    [baseZIndex]="10000"
+    [draggable]="false"
+    [resizable]="false"
+    [dismissableMask]="true"
+  >
+    <div class="p-d-flex p-jc-center p-mt-2">
+      <p-card
+        [header]="selectedExampleRow.title"
+        [subheader]="selectedExampleRow.sitename"
+        [style]="{ width: '360px' }"
+        styleClass="p-shadow-8"
+      >
+        <ng-template pTemplate="header">
+          <img [src]="selectedExampleRow.image" />
+        </ng-template>
+        <p>
+          {{ selectedExampleRow.description }}
+        </p>
+      </p-card>
+    </div>
+  </p-dialog>
+</span>
