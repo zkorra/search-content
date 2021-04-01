@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { State, Action, StateContext, Selector } from '@ngxs/store';
-import { SearchContent, GetEngines } from './search.action';
+import { SearchContent, GetEngines, SetSearchParams } from './search.action';
 import { SearchService } from './search.service';
 import { tap } from 'rxjs/operators';
 
 export class ContentStateModel {
   contents: any;
   engines: any;
+  params: any;
 }
 
 @Injectable()
@@ -15,6 +16,7 @@ export class ContentStateModel {
   defaults: {
     contents: null,
     engines: null,
+    params: null,
   },
 })
 export class ContentState {
@@ -28,6 +30,11 @@ export class ContentState {
   @Selector()
   static getEngineList(state: ContentStateModel): any {
     return state.engines;
+  }
+
+  @Selector()
+  static getSearchParamss(state: ContentStateModel): any {
+    return state.params;
   }
 
   @Action(SearchContent)
@@ -57,5 +64,17 @@ export class ContentState {
         });
       })
     );
+  }
+
+  @Action(SetSearchParams)
+  setSelectedCategory(
+    { getState, setState }: StateContext<ContentStateModel>,
+    { searchParams }: SetSearchParams
+  ): any {
+    const state = getState();
+    setState({
+      ...state,
+      params: searchParams,
+    });
   }
 }
