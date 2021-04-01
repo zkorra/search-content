@@ -1,0 +1,143 @@
+<p-toast position="top-center"></p-toast>
+
+<form [formGroup]="searchForm" (ngSubmit)="onSubmit(searchForm.value)">
+  <div class="p-grid p-fluid p-jc-center p-ai-end vertical-container p-m-1">
+    <div class="p-col-12 p-md-4">
+      <label>
+        Keyword
+        <small class="p-error">
+          <span>*</span>
+          <span
+            *ngIf="
+              !searchForm.controls['keyword'].valid &&
+              searchForm.controls['keyword'].dirty
+            "
+            >required</span
+          >
+        </small>
+      </label>
+      <input type="text" pInputText formControlName="keyword" />
+    </div>
+
+    <div class="p-col-12 p-md-2">
+      <label>
+        Search engine ID
+        <i
+          class="pi pi-question-circle"
+          pTooltip="Search engine ID in Google Programmable Search."
+          style="font-size: 0.75rem"
+        ></i>
+        <small class="p-error p-pl-1">
+          <span>*</span>
+          <span
+            *ngIf="
+              !searchForm.controls['searchEngineId'].valid &&
+              searchForm.controls['searchEngineId'].dirty
+            "
+            >required</span
+          >
+        </small>
+      </label>
+
+      <p-dropdown
+        #engineDropDown
+        [options]="engineList"
+        [(ngModel)]="searchForm.value.searchEngineId"
+        [editable]="true"
+        (onChange)="onEngineChange($event, engineDropDown)"
+        placeholder="Select"
+        optionLabel="name"
+        optionValue="searchEngineId"
+        formControlName="searchEngineId"
+        appendTo="body"
+      >
+        <ng-template let-option pTemplate="item">
+          <p-button
+            *ngIf="option.searchEngineId === 'create'; else selectItem"
+            styleClass="p-button-sm p-button-outlined p-button-info"
+            icon="pi pi-plus"
+            label="Save engine"
+          >
+          </p-button>
+
+          <ng-template #selectItem>
+            {{ option.name }}
+          </ng-template>
+        </ng-template>
+      </p-dropdown>
+    </div>
+
+    <div class="p-col-12 p-md-2">
+      <label>
+        Content Type
+        <small class="p-error">
+          <span>*</span>
+          <span
+            *ngIf="
+              !searchForm.controls['contentType'].valid &&
+              searchForm.controls['contentType'].dirty
+            "
+            >required</span
+          >
+        </small>
+      </label>
+
+      <p-dropdown
+        [options]="types"
+        [(ngModel)]="searchForm.value.contentType"
+        placeholder="Select"
+        optionLabel="key"
+        optionValue="value"
+        formControlName="contentType"
+      ></p-dropdown>
+    </div>
+
+    <div class="p-col-12 p-md-1">
+      <label>
+        Page
+        <i
+          class="pi pi-question-circle"
+          pTooltip="The default page is first. And maximum results per page is 10."
+          style="font-size: 0.75rem"
+        ></i
+      ></label>
+      <input type="text" pInputText placeholder="1" formControlName="page" />
+    </div>
+
+    <div class="p-col-12 p-md-2">
+      <label>Region</label>
+      <p-dropdown
+        [options]="regions"
+        [(ngModel)]="searchForm.value.region"
+        placeholder="Select"
+        optionLabel="key"
+        optionValue="value"
+        formControlName="region"
+      ></p-dropdown>
+    </div>
+
+    <div class="p-col-4 p-md-1">
+      <p-button
+        pRipple
+        styleClass="p-button-sm"
+        type="submit"
+        label="Search"
+        icon="pi pi-search"
+        iconPos="left"
+      ></p-button>
+    </div>
+  </div>
+</form>
+
+<!-- <p-dialog
+  header="Search Engine Details"
+  [(visible)]="isSaveEngineDialogOpen"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+  [baseZIndex]="10000"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+>
+  <div class="p-d-flex p-jc-center p-mt-2">hi</div>
+</p-dialog> -->
