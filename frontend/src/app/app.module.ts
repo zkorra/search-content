@@ -7,6 +7,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
+import { SearchFormComponent } from './components/form/search-form/search-form.component';
+import { ContentTableComponent } from './components/table/content-table/content-table.component';
 
 // PrimeNG UI Framework
 import { PrimeNgModule } from './primeng.module';
@@ -15,10 +17,12 @@ import { PrimeNgModule } from './primeng.module';
 import { NgxsModule } from '@ngxs/store';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
+
+// State
 import { ContentState } from './search/search.state';
 
 @NgModule({
-  declarations: [AppComponent, HomePageComponent],
+  declarations: [AppComponent, HomePageComponent, SearchFormComponent, ContentTableComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
