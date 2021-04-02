@@ -23,31 +23,32 @@
         pRipple
         icon="pi pi-file-o"
         (click)="
-          exportToCsv(
-            contentList,
-            searchParams?.contentType + '_' + searchParams?.keyword,
-            uniqueColumns
-          )
+          selectedContentList?.length === 0 ||
+          selectedContentList?.length === contentList?.length
+            ? exportToCsv(
+                contentList,
+                searchParams?.keyword +
+                  '_' +
+                  searchParams?.contentType +
+                  '_all',
+                uniqueColumnsName
+              )
+            : exportToCsv(
+                selectedContentList,
+                searchParams?.keyword +
+                  '_' +
+                  searchParams?.contentType +
+                  '_selected',
+                uniqueColumnsName
+              )
+        "
+        [pTooltip]="
+          selectedContentList?.length === 0 ||
+          selectedContentList?.length === contentList?.length
+            ? 'Export all rows to CSV'
+            : 'Export selected rows to CSV'
         "
         class="p-ml-2"
-        pTooltip="Export all as CSV file"
-        tooltipPosition="bottom"
-      ></button>
-      <button
-        type="button"
-        pButton
-        pRipple
-        icon="pi pi-filter"
-        (click)="
-          exportToCsv(
-            selectedContentList,
-            searchParams?.contentType + '_' + searchParams?.keyword,
-            uniqueColumns
-          )
-        "
-        class="p-button-info p-ml-auto"
-        pTooltip="Export selected rows"
-        tooltipPosition="left"
       ></button>
     </div>
   </ng-template>
