@@ -1,15 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import {
-  Validators,
-  FormControl,
-  FormGroup,
-  FormBuilder,
-} from '@angular/forms';
 import { ContentState } from '../../../search/search.state';
-import { SearchContent, GetEngines } from '../../../search/search.action';
+import { SearchContent } from '../../../search/search.action';
 import { Actions, ofActionSuccessful, Select, Store } from '@ngxs/store';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { MessageService } from 'primeng/api';
 import * as FileSaver from 'file-saver';
 
@@ -40,7 +32,7 @@ export class ContentTableComponent implements OnInit {
 
   isExampleCardDialogOpen = false;
 
-  uniqueColumns: any;
+  uniqueColumnsName: any;
 
   constructor(
     private actions$: Actions,
@@ -64,18 +56,10 @@ export class ContentTableComponent implements OnInit {
           if (data) {
             this.contentList = data;
 
-            this.uniqueColumns = this.filterUniqueKey(this.contentList);
+            this.uniqueColumnsName = this.filterUniqueKey(this.contentList);
 
-            const warpColumns: any[] = [];
+            this.allColumns = this.appendColumnHeader(this.uniqueColumnsName);
 
-            this.uniqueColumns.forEach((key: any) => {
-              warpColumns.push({
-                field: key,
-                header: key[0].toUpperCase() + key.slice(1),
-              });
-            });
-
-            this.allColumns = warpColumns;
             this.warpSelectedColumns = this.allColumns;
           }
         });
@@ -98,6 +82,31 @@ export class ContentTableComponent implements OnInit {
     ];
   }
 
+  appendColumnHeader(columns: any): any {
+    const columnsWithHeader: any[] = [];
+
+    columns.forEach((key: any) => {
+      columnsWithHeader.push({
+        field: key,
+        header: key[0].toUpperCase() + key.slice(1),
+      });
+    });
+
+    return columnsWithHeader;
+  }
+
+  appendKeywordColumn(columns?: string[]): any {
+    columns?.unshift('keyword');
+    return columns;
+  }
+
+  appendKeywordProperty(rows: object[]): any {
+    return rows.map((element) => ({
+      keyword: this.searchParams?.keyword,
+      ...element,
+    }));
+  }
+
   private saveAsFile(buffer: any, fileName: string, fileType: string): void {
     const data: Blob = new Blob(['\uFEFF' + buffer], { type: fileType });
     FileSaver.saveAs(data, fileName);
@@ -111,6 +120,10 @@ export class ContentTableComponent implements OnInit {
     if (!rows || !rows.length) {
       return;
     }
+
+    rows = this.appendKeywordProperty(rows);
+    columns = this.appendKeywordColumn(columns);
+
     const separator = ',';
     const keys = Object.keys(rows[0]).filter((k) => {
       if (columns?.length) {
@@ -119,6 +132,7 @@ export class ContentTableComponent implements OnInit {
         return true;
       }
     });
+
     const csvContent =
       keys.join(separator) +
       '\n' +
