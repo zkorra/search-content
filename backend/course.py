@@ -12,6 +12,10 @@ def clean_course_dataframe(dataframe):
 
     dataframe = replace_basic_columns(dataframe)
 
+    dataframe['title'].replace('', np.nan, inplace=True)
+
+    dataframe = dataframe.dropna(subset=['title'])
+
     dataframe.rename(
         columns={
             'cse_url': 'url',
