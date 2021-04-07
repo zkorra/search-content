@@ -29,6 +29,10 @@ def clean_article_dataframe(dataframe):
 
     dataframe = replace_published_date(dataframe)
 
+    dataframe['title'].replace('', np.nan, inplace=True)
+
+    dataframe = dataframe.dropna(subset=['title'])
+
     dataframe.rename(
         columns={
             'cse_url': 'url',
