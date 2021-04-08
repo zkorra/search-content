@@ -5,7 +5,7 @@ import {
   FormGroup,
   FormBuilder,
 } from '@angular/forms';
-import { ContentState } from '../../../search/search.state';
+import { SearchState } from '../../../search/search.state';
 import {
   SearchContent,
   GetEngines,
@@ -22,7 +22,7 @@ import { MessageService } from 'primeng/api';
   providers: [MessageService],
 })
 export class SearchFormComponent implements OnInit {
-  @Select(ContentState.getEngineList)
+  @Select(SearchState.getEngineList)
   engines: any;
 
   searchForm!: FormGroup;
@@ -31,7 +31,7 @@ export class SearchFormComponent implements OnInit {
 
   engineList: any = [];
 
-  isSaveEngineDialogOpen = false;
+  isManageEngineDialogOpen = false;
 
   types = [
     { key: 'Article', value: 'article' },
@@ -139,8 +139,8 @@ export class SearchFormComponent implements OnInit {
     this.engineList.push(creatorObject);
   }
 
-  displaySaveEngineDialog(): void {
-    this.isSaveEngineDialogOpen = true;
+  displayManageEngineDialog(): void {
+    this.isManageEngineDialogOpen = true;
   }
 
   onEngineChange(event: any, dropdown: any): void {
@@ -148,7 +148,7 @@ export class SearchFormComponent implements OnInit {
 
     if (value === 'create') {
       dropdown.clear();
-      this.handleSaveEngine();
+      this.handleManageEngine();
     } else {
       // mouse event
       if (originalEvent.detail === 1) {
@@ -161,10 +161,10 @@ export class SearchFormComponent implements OnInit {
     }
   }
 
-  handleSaveEngine(): void {
+  handleManageEngine(): void {
     this.searchForm.value.searchEngineId = '';
     this.searchForm.controls.searchEngineId.markAsPristine();
 
-    this.displaySaveEngineDialog();
+    this.displayManageEngineDialog();
   }
 }

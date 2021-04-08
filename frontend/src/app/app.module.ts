@@ -20,14 +20,14 @@ import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
 
 // State
-import { ContentState } from './search/search.state';
+import { SearchState } from './search/search.state';
 
 @NgModule({
   declarations: [AppComponent, HomePageComponent, SearchFormComponent, ContentTableComponent, NavbarComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgxsModule.forRoot([ContentState]),
+    NgxsModule.forRoot([SearchState]),
     NgxsReduxDevtoolsPluginModule.forRoot(),
     NgxsLoggerPluginModule.forRoot(),
     PrimeNgModule,
