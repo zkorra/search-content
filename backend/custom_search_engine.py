@@ -1,6 +1,6 @@
 import requests
 
-GOOGLE_API_KEY = "AIzaSyB6trExhF-mxOKdNQsAW-HkVOHBGV8W0R4"
+GOOGLE_API_KEY = "AIzaSyDy7a67ge1_rHrjm6JeGjeIrXMBix6Loow"
 COUNT = 0
 
 
@@ -17,6 +17,8 @@ def fetch_search_api(searchEngineId, keyword, page, region):
     start = (int(page) - 1) * 10 + 1
 
     url = f"https://www.googleapis.com/customsearch/v1?key={GOOGLE_API_KEY}&cx={SEARCH_ENGINE_ID}&q={keyword}&start={start}{REGION_PARAM}"
+
+    print(url)
 
     data = requests.get(url).json()
 
