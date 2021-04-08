@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { SearchFormComponent } from './components/form/search-form/search-form.component';
 import { ContentTableComponent } from './components/table/content-table/content-table.component';
+import { NavbarComponent } from './components/nav/navbar/navbar.component';
 
 // PrimeNG UI Framework
 import { PrimeNgModule } from './primeng.module';
@@ -22,7 +23,7 @@ import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
 import { ContentState } from './search/search.state';
 
 @NgModule({
-  declarations: [AppComponent, HomePageComponent, SearchFormComponent, ContentTableComponent],
+  declarations: [AppComponent, HomePageComponent, SearchFormComponent, ContentTableComponent, NavbarComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
