@@ -1,15 +1,15 @@
 export class SearchContent {
-  static readonly type = '[Content] Search';
+  static readonly type = '[Search] Search';
 
   constructor(public searchParams: {}) {}
 }
 
 export class GetEngines {
-  static readonly type = '[Content] Engines';
+  static readonly type = '[Search] Engines';
 }
 
 export class SetSearchParams {
-  static readonly type = '[Category] Set';
+  static readonly type = '[Search] Set';
 
   constructor(public searchParams: {}) {}
 }

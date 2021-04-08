@@ -4,42 +4,42 @@ import { SearchContent, GetEngines, SetSearchParams } from './search.action';
 import { SearchService } from './search.service';
 import { tap } from 'rxjs/operators';
 
-export class ContentStateModel {
+export class SearchStateModel {
   contents: any;
   engines: any;
   params: any;
 }
 
 @Injectable()
-@State<ContentStateModel>({
-  name: 'content',
+@State<SearchStateModel>({
+  name: 'search',
   defaults: {
     contents: null,
     engines: null,
     params: null,
   },
 })
-export class ContentState {
+export class SearchState {
   constructor(private searchService: SearchService) {}
 
   @Selector()
-  static getContentList(state: ContentStateModel): any {
+  static getContentList(state: SearchStateModel): any {
     return state.contents;
   }
 
   @Selector()
-  static getEngineList(state: ContentStateModel): any {
+  static getEngineList(state: SearchStateModel): any {
     return state.engines;
   }
 
   @Selector()
-  static getSearchParamss(state: ContentStateModel): any {
+  static getSearchParamss(state: SearchStateModel): any {
     return state.params;
   }
 
   @Action(SearchContent)
   searchContent(
-    { getState, setState }: StateContext<ContentStateModel>,
+    { getState, setState }: StateContext<SearchStateModel>,
     { searchParams }: SearchContent
   ): any {
     return this.searchService.fetchCustomSearch(searchParams).pipe(
@@ -54,7 +54,7 @@ export class ContentState {
   }
 
   @Action(GetEngines)
-  getEngines({ getState, setState }: StateContext<ContentStateModel>): any {
+  getEngines({ getState, setState }: StateContext<SearchStateModel>): any {
     return this.searchService.getEngines().pipe(
       tap((result) => {
         const state = getState();
@@ -68,7 +68,7 @@ export class ContentState {
 
   @Action(SetSearchParams)
   setSelectedCategory(
-    { getState, setState }: StateContext<ContentStateModel>,
+    { getState, setState }: StateContext<SearchStateModel>,
     { searchParams }: SetSearchParams
   ): any {
     const state = getState();

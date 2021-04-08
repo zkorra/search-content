@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ContentState } from '../../../search/search.state';
+import { SearchState } from '../../../search/search.state';
 import { SearchContent } from '../../../search/search.action';
 import { Actions, ofActionSuccessful, Select, Store } from '@ngxs/store';
 import { MessageService } from 'primeng/api';
@@ -12,10 +12,10 @@ import * as FileSaver from 'file-saver';
   providers: [MessageService],
 })
 export class ContentTableComponent implements OnInit {
-  @Select(ContentState.getContentList)
+  @Select(SearchState.getContentList)
   contents: any;
 
-  @Select(ContentState.getSearchParamss)
+  @Select(SearchState.getSearchParamss)
   params: any;
 
   searchParams: any;
