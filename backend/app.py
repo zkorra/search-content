@@ -1,12 +1,20 @@
 from flask import Flask, request, jsonify, Response, send_file
+from firebase_admin import credentials, firestore, initialize_app
 from flask_cors import CORS
 from custom_search_engine import fetch_search_api
 from article import filter_article_property
 from course import filter_course_property
 import traceback
 
+# Initialize Flask App
 app = Flask(__name__)
 CORS(app)
+
+# Initialize Firestore DB
+cred = credentials.Certificate('config/key.json')
+default_app = initialize_app(cred)
+db = firestore.client()
+engine_ref = db.collection('engines')
 
 
 class APIError(Exception):
@@ -96,6 +104,79 @@ def index():
 @app.route('/engine', methods=['GET'])
 def fetch_engine_list():
     return send_file('data/engine_list.json', cache_timeout=0), 200
+
+
+@app.route('/engine/list', methods=['GET'])
+def read():
+    """
+        read() : Fetches documents from Firestore collection as JSON
+        engine : Return document that matches query ID
+        all_engines : Return all documents
+    """
+    try:
+        all_engines = []
+
+        for doc in engine_ref.stream():
+            engine = doc.to_dict()
+            engine["id"] = doc.id
+            all_engines.append(engine)
+
+        return jsonify(all_engines), 200
+    except Exception as e:
+        return f"An Error Occured: {e}"
+
+
+@app.route('/engine/create', methods=['POST'])
+def create():
+    """
+        create() : Add document to Firestore collection with request body
+        Ensure you pass a custom ID as part of json body in post request
+        e.g. json={'searchEngineId': '1f22',
+            'name': 'myengine', 'contentType': 'article'}
+    """
+    try:
+        engine_ref.document().set(request.json)
+        search_engine_id = request.json['searchEngineId']
+        docs = engine_ref.where(
+            u'searchEngineId', u'==', search_engine_id).stream()
+        for doc in docs:
+            engine = doc.to_dict()
+            engine["id"] = doc.id
+        return jsonify(engine), 200
+    except Exception as e:
+        return f"An Error Occured: {e}"
+
+
+@app.route('/engine/update', methods=['PUT'])
+def update():
+    """
+        update() : Update document in Firestore collection with request body
+        Ensure you pass a custom ID as part of json body in post request
+        e.g. json={'id': '1', 'title': 'Write a blog post today'}
+    """
+    try:
+        id = request.args.get('id')
+        engine_ref.document(id).update(request.json)
+        doc = engine_ref.document(id).get()
+        engine = doc.to_dict()
+        engine["id"] = doc.id
+        return jsonify(engine), 200
+    except Exception as e:
+        return f"An Error Occured: {e}"
+
+
+# @app.route('/delete', methods=['GET', 'DELETE'])
+# def delete():
+#     """
+#         delete() : Delete a document from Firestore collection
+#     """
+#     try:
+#         # Check for ID in URL query
+#         todo_id = request.args.get('id')
+#         todo_ref.document(todo_id).delete()
+#         return jsonify({"success": True}), 200
+#     except Exception as e:
+#         return f"An Error Occured: {e}"
 
 
 if __name__ == '__main__':
