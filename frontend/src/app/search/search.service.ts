@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -11,10 +12,6 @@ export class SearchService {
     let params = new HttpParams();
     params = searchParams;
 
-    return this.http.get<any>(`http://127.0.0.1:8000/fetch`, { params });
-  }
-
-  getEngines(): any {
-    return this.http.get<any>(`http://127.0.0.1:8000/engine`);
+    return this.http.get<any>(`${environment.backendUrl}/fetch`, { params });
   }
 }
