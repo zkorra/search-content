@@ -52,16 +52,16 @@
         appendTo="body"
       >
         <ng-template let-option pTemplate="item">
+          <ng-template #selectItem>
+            {{ option.name }}
+          </ng-template>
+
           <p-button
             *ngIf="option.searchEngineId === 'create'; else selectItem"
             styleClass="p-button-sm p-button-outlined p-button-info"
             label="Manage engines"
           >
           </p-button>
-
-          <ng-template #selectItem>
-            {{ option.name }}
-          </ng-template>
         </ng-template>
       </p-dropdown>
     </div>
@@ -136,66 +136,5 @@
   [resizable]="false"
   [dismissableMask]="true"
 >
-  <p-table
-    #engineDataTable
-    [value]="engineList"
-    [rows]="engineList.length"
-    [autoLayout]="true"
-    styleClass="p-datatable-striped"
-    [rowHover]="true"
-  >
-    <ng-template pTemplate="caption">
-      <div class="p-d-flex p-ai-center">
-        <button
-          pButton
-          pRipple
-          label="New Engine"
-          icon="pi pi-plus"
-          class="p-button-sm"
-        ></button>
-      </div>
-    </ng-template>
-    <ng-template pTemplate="header">
-      <tr>
-        <th pSortableColumn="searchEngineId">
-          Search Engine ID <p-sortIcon field="title"></p-sortIcon>
-        </th>
-        <th pSortableColumn="name">
-          Name <p-sortIcon field="name"></p-sortIcon>
-        </th>
-        <th pSortableColumn="contentType">
-          Content Type <p-sortIcon field="contentType"></p-sortIcon>
-        </th>
-        <th style="width: 8rem"></th>
-      </tr>
-    </ng-template>
-
-    <ng-template pTemplate="body" let-rowData>
-      <tr *ngIf="rowData.searchEngineId !== 'create'">
-        <td>
-          {{ rowData.searchEngineId }}
-        </td>
-        <td>
-          {{ rowData.name }}
-        </td>
-        <td>
-          {{ rowData.contentType }}
-        </td>
-        <td>
-          <button
-            pButton
-            pRipple
-            icon="pi pi-pencil"
-            class="p-button-rounded p-button-success p-mr-2"
-          ></button>
-          <button
-            pButton
-            pRipple
-            icon="pi pi-trash"
-            class="p-button-rounded p-button-warning"
-          ></button>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+  <app-engine-table></app-engine-table>
 </p-dialog>
