@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { SearchFormComponent } from './components/form/search-form/search-form.component';
 import { ContentTableComponent } from './components/table/content-table/content-table.component';
+import { EngineTableComponent } from './components/table/engine-table/engine-table.component';
 import { NavbarComponent } from './components/nav/navbar/navbar.component';
 
 // PrimeNG UI Framework
@@ -21,13 +22,21 @@ import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
 
 // State
 import { SearchState } from './search/search.state';
+import { EngineState } from './engine/engine.state';
 
 @NgModule({
-  declarations: [AppComponent, HomePageComponent, SearchFormComponent, ContentTableComponent, NavbarComponent],
+  declarations: [
+    AppComponent,
+    HomePageComponent,
+    SearchFormComponent,
+    ContentTableComponent,
+    NavbarComponent,
+    EngineTableComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgxsModule.forRoot([SearchState]),
+    NgxsModule.forRoot([SearchState, EngineState]),
     NgxsReduxDevtoolsPluginModule.forRoot(),
     NgxsLoggerPluginModule.forRoot(),
     PrimeNgModule,
