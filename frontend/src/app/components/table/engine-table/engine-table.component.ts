@@ -10,15 +10,17 @@ import {
   GetEngines,
   CreateEngine,
   UpdateEngine,
+  DeleteEngine,
 } from '../../../engine/engine.action';
 import { Select, Store } from '@ngxs/store';
 import { catchError, map } from 'rxjs/operators';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-engine-table',
   templateUrl: './engine-table.component.html',
   styleUrls: ['./engine-table.component.scss'],
+  providers: [MessageService, ConfirmationService],
 })
 export class EngineTableComponent implements OnInit {
   @Select(EngineState.getEngineList)
@@ -42,7 +44,8 @@ export class EngineTableComponent implements OnInit {
   constructor(
     private store: Store,
     private fb: FormBuilder,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -85,14 +88,14 @@ export class EngineTableComponent implements OnInit {
             .pipe(
               map(async (res) => {
                 await this.subscribeEngines();
-              })
-              // catchError(async (error) =>
-              //   this.messageService.add({
-              //     severity: 'error',
-              //     summary: `${error.status} - ${error.error.error}`,
-              //     detail: `${error.error.message}`,
-              //   })
-              // )
+              }),
+              catchError(async (error) =>
+                this.messageService.add({
+                  severity: 'error',
+                  summary: `${error.status} - ${error.error.error}`,
+                  detail: `${error.error.message}`,
+                })
+              )
             )
             .toPromise()
         : await this.store
@@ -100,18 +103,48 @@ export class EngineTableComponent implements OnInit {
             .pipe(
               map(async (res) => {
                 await this.subscribeEngines();
-              })
-              // catchError(async (error) =>
-              //   this.messageService.add({
-              //     severity: 'error',
-              //     summary: `${error.status} - ${error.error.error}`,
-              //     detail: `${error.error.message}`,
-              //   })
-              // )
+              }),
+              catchError(async (error) =>
+                this.messageService.add({
+                  severity: 'error',
+                  summary: `${error.status} - ${error.error.error}`,
+                  detail: `${error.error.message}`,
+                })
+              )
             )
             .toPromise();
       this.closeDialog();
     }
+  }
+
+  async deleteEngine(engineData: any): Promise<void> {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete "' + engineData.name + '" ?',
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      accept: async () => {
+        await this.store
+          .dispatch(new DeleteEngine(engineData.id))
+          .pipe(
+            map((res) => {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Successful',
+                detail: 'Engine Deleted',
+                life: 3000,
+              });
+            }),
+            catchError(async (error) =>
+              this.messageService.add({
+                severity: 'error',
+                summary: `${error.status}`,
+                detail: `${error.error.message}`,
+              })
+            )
+          )
+          .toPromise();
+      },
+    });
   }
 
   closeDialog(): void {

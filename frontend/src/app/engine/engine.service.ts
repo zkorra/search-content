@@ -25,4 +25,10 @@ export class EngineService {
       payload
     );
   }
+
+  deleteEngine(id: string): any {
+    return this.http.delete<any>(
+      `${environment.backendUrl}/engine/delete?id=${id}`
+    );
+  }
 }

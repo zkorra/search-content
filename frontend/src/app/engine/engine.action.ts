@@ -13,3 +13,9 @@ export class UpdateEngine {
 
   constructor(public id: string, public payload: any) {}
 }
+
+export class DeleteEngine {
+  static readonly type = '[Engine] Delete';
+
+  constructor(public id: string) {}
+}
