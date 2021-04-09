@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
 import { State, Action, StateContext, Selector } from '@ngxs/store';
-import { GetEngines, CreateEngine, UpdateEngine } from './engine.action';
+import {
+  GetEngines,
+  CreateEngine,
+  UpdateEngine,
+  DeleteEngine,
+} from './engine.action';
 import { EngineService } from './engine.service';
 import { tap } from 'rxjs/operators';
 
@@ -67,6 +72,25 @@ export class EngineState {
         setState({
           ...state,
           engines: engineList,
+        });
+      })
+    );
+  }
+
+  @Action(DeleteEngine)
+  deleteEngine(
+    { getState, setState }: StateContext<EngineStateModel>,
+    { id }: DeleteEngine
+  ): any {
+    return this.engineService.deleteEngine(id).pipe(
+      tap(() => {
+        const state = getState();
+        const filteredArray = state.engines.filter(
+          (item: any) => item.id !== id
+        );
+        setState({
+          ...state,
+          engines: filteredArray,
         });
       })
     );

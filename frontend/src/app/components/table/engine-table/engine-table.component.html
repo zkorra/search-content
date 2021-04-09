@@ -1,3 +1,5 @@
+<p-toast></p-toast>
+
 <p-table
   #engineDataTable
   [value]="engineList"
@@ -55,6 +57,7 @@
           pRipple
           icon="pi pi-trash"
           class="p-button-rounded p-button-warning"
+          (click)="deleteEngine(rowData)"
         ></button>
       </td>
     </tr>
@@ -127,3 +130,10 @@
     ></button>
   </ng-template>
 </p-dialog>
+
+<p-confirmDialog
+  defaultFocus="none"
+  acceptButtonStyleClass="p-button-danger"
+  rejectButtonStyleClass="p-button-text p-button-plain"
+  [style]="{ width: '450px' }"
+></p-confirmDialog>
