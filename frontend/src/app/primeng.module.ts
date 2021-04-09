@@ -20,6 +20,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { MessagesModule } from 'primeng/messages';
 import { MessageModule } from 'primeng/message';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @NgModule({
   imports: [CommonModule],
@@ -44,6 +45,7 @@ import { MessageModule } from 'primeng/message';
     TooltipModule,
     MessagesModule,
     MessageModule,
+    ConfirmDialogModule,
   ],
 })
 export class PrimeNgModule {}
