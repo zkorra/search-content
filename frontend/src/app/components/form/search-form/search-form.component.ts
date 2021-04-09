@@ -6,11 +6,9 @@ import {
   FormBuilder,
 } from '@angular/forms';
 import { SearchState } from '../../../search/search.state';
-import {
-  SearchContent,
-  GetEngines,
-  SetSearchParams,
-} from '../../../search/search.action';
+import { EngineState } from '../../../engine/engine.state';
+import { SearchContent, SetSearchParams } from '../../../search/search.action';
+import { GetEngines } from '../../../engine/engine.action';
 import { Select, Store } from '@ngxs/store';
 import { catchError, map } from 'rxjs/operators';
 import { MessageService } from 'primeng/api';
@@ -22,7 +20,7 @@ import { MessageService } from 'primeng/api';
   providers: [MessageService],
 })
 export class SearchFormComponent implements OnInit {
-  @Select(SearchState.getEngineList)
+  @Select(EngineState.getEngineList)
   engines: any;
 
   searchForm!: FormGroup;
