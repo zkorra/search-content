@@ -12,6 +12,6 @@ export class SearchService {
     let params = new HttpParams();
     params = searchParams;
 
-    return this.http.get<any>(`${environment.backendUrl}/fetch`, { params });
+    return this.http.get<any>(`${environment.backendUrl}/fetch_custom_search`, { params });
   }
 }

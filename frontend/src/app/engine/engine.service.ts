@@ -9,26 +9,26 @@ export class EngineService {
   constructor(private http: HttpClient) {}
 
   getEngines(): any {
-    return this.http.get<any>(`${environment.backendUrl}/engine/list`);
+    return this.http.get<any>(`${environment.backendUrl}/engine`);
   }
 
   createEngine(payload: any): any {
     return this.http.post<any>(
-      `${environment.backendUrl}/engine/create`,
+      `${environment.backendUrl}/engine`,
       payload
     );
   }
 
   updateEngine(id: string, payload: any): any {
     return this.http.put<any>(
-      `${environment.backendUrl}/engine/update?id=${id}`,
+      `${environment.backendUrl}/engine?id=${id}`,
       payload
     );
   }
 
   deleteEngine(id: string): any {
     return this.http.delete<any>(
-      `${environment.backendUrl}/engine/delete?id=${id}`
+      `${environment.backendUrl}/engine?id=${id}`
     );
   }
 }
