@@ -84,7 +84,7 @@ export class SearchFormComponent implements OnInit {
         catchError(async (error) =>
           this.messageService.add({
             severity: 'error',
-            summary: `${error.status} - ${error.error.error}`,
+            summary: `${error.error.code} - ${error.error.service}`,
             detail: `${error.error.message}`,
           })
         )
