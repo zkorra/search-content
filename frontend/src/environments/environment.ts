@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  backendUrl: 'http://localhost:8000',
+  // backendUrl: 'http://localhost:8080',
+  backendUrl: 'https://asia-southeast2-search-content-project.cloudfunctions.net',
 };
 
 /*
