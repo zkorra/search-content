@@ -65,9 +65,7 @@ export class EngineState {
       tap((result: any) => {
         const state = getState();
         const engineList = [...state.engines];
-        const engineIndex = engineList.findIndex(
-          (item) => item.searchEngineId === payload.searchEngineId
-        );
+        const engineIndex = engineList.findIndex((item) => item.id === id);
         engineList[engineIndex] = result;
         setState({
           ...state,
