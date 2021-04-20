@@ -3,9 +3,7 @@ from flask import request, make_response
 from common.exceptions import exception_common, exception_cse
 from common.dataframe_preparation.article import filter_article_property
 from common.dataframe_preparation.course import filter_course_property
-
-GOOGLE_API_KEY = "AIzaSyDy7a67ge1_rHrjm6JeGjeIrXMBix6Loow"
-COUNT = 0
+from config.secret import get_google_api_key
 
 
 def handle_clean_data(data, content_type):
@@ -20,6 +18,8 @@ def handle_clean_data(data, content_type):
 
 
 def fetch(request):
+
+    GOOGLE_API_KEY = get_google_api_key()
 
     content_type = request.args.get('type', '')
     search_engine_id = request.args.get('cx', '')
