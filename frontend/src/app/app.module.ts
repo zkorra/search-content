@@ -11,6 +11,8 @@ import { SearchFormComponent } from './components/form/search-form/search-form.c
 import { ContentTableComponent } from './components/table/content-table/content-table.component';
 import { EngineTableComponent } from './components/table/engine-table/engine-table.component';
 import { NavbarComponent } from './components/nav/navbar/navbar.component';
+import { HistoryTableComponent } from './components/table/history-table/history-table.component';
+import { HistoryPageComponent } from './pages/history-page/history-page.component';
 
 // PrimeNG UI Framework
 import { PrimeNgModule } from './primeng.module';
@@ -32,6 +34,8 @@ import { EngineState } from './engine/engine.state';
     ContentTableComponent,
     NavbarComponent,
     EngineTableComponent,
+    HistoryTableComponent,
+    HistoryPageComponent,
   ],
   imports: [
     BrowserModule,
