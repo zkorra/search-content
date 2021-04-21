@@ -1,7 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { SearchState } from '../../../search/search.state';
-import { SearchContent } from '../../../search/search.action';
+import { SearchContent, GetContentFile } from '../../../search/search.action';
 import { Actions, ofActionSuccessful, Select, Store } from '@ngxs/store';
+import { ActivatedRoute } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import * as FileSaver from 'file-saver';
 
@@ -36,34 +37,43 @@ export class ContentTableComponent implements OnInit {
 
   constructor(
     private actions$: Actions,
+    private route: ActivatedRoute,
     private store: Store,
     private messageService: MessageService
-  ) {}
+  ) {
+    route.params.subscribe(() => {
+      this.fetchContent();
+    });
+  }
 
   async ngOnInit(): Promise<void> {
     this.actions$
       .pipe(ofActionSuccessful(SearchContent))
       .subscribe(async () => {
-        await this.params.subscribe((data: any) => {
-          if (data) {
-            this.searchParams = data;
-          }
-        });
-
-        this.selectedContentList = [];
-
-        await this.contents.subscribe((data: any) => {
-          if (data) {
-            this.contentList = data;
-
-            this.uniqueColumnsName = this.filterUniqueKey(this.contentList);
-
-            this.allColumns = this.appendColumnHeader(this.uniqueColumnsName);
-
-            this.warpSelectedColumns = this.allColumns;
-          }
-        });
+        await this.fetchContent();
       });
+  }
+
+  async fetchContent(): Promise<void> {
+    await this.params.subscribe((data: any) => {
+      if (data) {
+        this.searchParams = data;
+      }
+    });
+
+    this.selectedContentList = [];
+
+    await this.contents.subscribe((data: any) => {
+      if (data) {
+        this.contentList = data;
+
+        this.uniqueColumnsName = this.filterUniqueKey(this.contentList);
+
+        this.allColumns = this.appendColumnHeader(this.uniqueColumnsName);
+
+        this.warpSelectedColumns = this.allColumns;
+      }
+    });
   }
 
   displayExampleCardDialog(rowData: any): void {
