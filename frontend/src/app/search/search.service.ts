@@ -12,6 +12,22 @@ export class SearchService {
     let params = new HttpParams();
     params = searchParams;
 
-    return this.http.get<any>(`${environment.backendUrl}/fetch_custom_search`, { params });
+    return this.http.get<any>(`${environment.backendUrl}/fetch_custom_search`, {
+      params,
+    });
+  }
+
+  fetchHistory(): any {
+    return this.http.get<any>(`${environment.backendUrl}/history`);
+  }
+
+  loadContentFile(filename: string): any {
+    return this.http.get<any>(
+      `${environment.backendUrl}/history?file=${filename}`
+    );
+  }
+
+  deleteHistory(id: string): any {
+    return this.http.delete<any>(`${environment.backendUrl}/history?id=${id}`);
   }
 }

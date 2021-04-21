@@ -9,3 +9,19 @@ export class SetSearchParams {
 
   constructor(public searchParams: {}) {}
 }
+
+export class GetHistory {
+  static readonly type = '[History] Get';
+}
+
+export class GetContentFile {
+  static readonly type = '[History] Get File';
+
+  constructor(public filename: string) {}
+}
+
+export class DeleteHistory {
+  static readonly type = '[History] Delete';
+
+  constructor(public id: string) {}
+}
