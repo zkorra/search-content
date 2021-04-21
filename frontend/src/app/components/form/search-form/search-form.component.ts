@@ -12,6 +12,7 @@ import { GetEngines } from '../../../engine/engine.action';
 import { Select, Store } from '@ngxs/store';
 import { catchError, map } from 'rxjs/operators';
 import { MessageService } from 'primeng/api';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-search-form',
@@ -22,6 +23,9 @@ import { MessageService } from 'primeng/api';
 export class SearchFormComponent implements OnInit {
   @Select(EngineState.getEngineList)
   engines: any;
+
+  @Select(SearchState.getSearchParamss)
+  params: any;
 
   searchForm!: FormGroup;
 
@@ -45,14 +49,9 @@ export class SearchFormComponent implements OnInit {
   constructor(
     private store: Store,
     private fb: FormBuilder,
+    private route: ActivatedRoute,
     private messageService: MessageService
-  ) {}
-
-  async ngOnInit(): Promise<void> {
-    await this.fetchEngines();
-
-    this.appendFakeEngineObject();
-
+  ) {
     this.searchForm = this.fb.group({
       contentType: new FormControl('', Validators.required),
       searchEngineId: new FormControl('', Validators.required),
@@ -60,6 +59,20 @@ export class SearchFormComponent implements OnInit {
       page: new FormControl(''),
       region: new FormControl(''),
     });
+
+    route.params.subscribe(() => {
+      this.params.subscribe((data: any) => {
+        if (data) {
+          this.searchForm.patchValue(data);
+        }
+      });
+    });
+  }
+
+  async ngOnInit(): Promise<void> {
+    await this.fetchEngines();
+
+    this.appendFakeEngineObject();
   }
 
   async fetchEngines(): Promise<void> {
@@ -109,7 +122,7 @@ export class SearchFormComponent implements OnInit {
       const searchParams: any = {
         type: contentType,
         cx: searchEngineId,
-        query: keyword,
+        query: encodeURIComponent(keyword),
         page,
         region,
       };
