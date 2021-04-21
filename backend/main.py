@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_cors import cross_origin
-from common import custom_search_engine, engines_management
+from common import custom_search_engine, engines_management, cse_management
 
 app = Flask(__name__)
 
@@ -10,6 +10,21 @@ app = Flask(__name__)
 def fetch_custom_search(request):
 
     response = custom_search_engine.fetch(request)
+    return response
+
+
+@app.route("/history", methods=['GET', 'DELETE'])
+@cross_origin()
+def history(request):
+
+    if request.method == 'GET':
+        if request.args.get('file'):
+            response = cse_management.load_file(request)
+        else:
+            response = cse_management.fetch_history(request)
+    if request.method == 'DELETE':
+        response = cse_management.delete_history(request)
+
     return response
 
 
