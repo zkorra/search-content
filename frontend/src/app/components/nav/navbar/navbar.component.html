@@ -1,8 +1,17 @@
 <p-menubar styleClass="p-px-4 p-mb-2">
   <ng-template pTemplate="start">
-    <div class="p-d-flex p-ai-center">
+    <div class="p-d-flex p-ai-center home-layout" (click)="goToHomePage()">
       <i class="pi pi-search p-mr-3 logo"></i>
       <span class="header">ScoutOut Search Content</span>
     </div>
+  </ng-template>
+  <ng-template pTemplate="end">
+    <button
+      pButton
+      pRipple
+      label="History"
+      class="p-ml-2 p-button-text p-button-plain"
+      (click)="goToHistoryPage()"
+    ></button>
   </ng-template>
 </p-menubar>
