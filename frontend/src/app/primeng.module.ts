@@ -21,6 +21,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { MessagesModule } from 'primeng/messages';
 import { MessageModule } from 'primeng/message';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { BlockUIModule } from 'primeng/blockui';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @NgModule({
   imports: [CommonModule],
@@ -46,6 +48,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
     MessagesModule,
     MessageModule,
     ConfirmDialogModule,
+    BlockUIModule,
+    ProgressSpinnerModule,
   ],
 })
 export class PrimeNgModule {}

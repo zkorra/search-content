@@ -19,6 +19,7 @@ import { PrimeNgModule } from './primeng.module';
 
 // NGXS
 import { NgxsModule } from '@ngxs/store';
+import { NgxsActionsExecutingModule } from '@ngxs-labs/actions-executing';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
 
@@ -41,6 +42,7 @@ import { EngineState } from './engine/engine.state';
     BrowserModule,
     AppRoutingModule,
     NgxsModule.forRoot([SearchState, EngineState]),
+    NgxsActionsExecutingModule.forRoot(),
     NgxsReduxDevtoolsPluginModule.forRoot(),
     NgxsLoggerPluginModule.forRoot(),
     PrimeNgModule,
