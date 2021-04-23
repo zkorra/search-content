@@ -9,19 +9,25 @@ app = Flask(__name__)
 @cross_origin()
 def fetch_custom_search(request):
 
-    response = custom_search_engine.fetch(request)
+    if request.method == 'GET':
+        response = custom_search_engine.fetch(request)
+
     return response
 
 
-@app.route("/history", methods=['GET', 'DELETE'])
+@app.route("/history", methods=['GET', 'POST', 'DELETE'])
 @cross_origin()
 def history(request):
 
     if request.method == 'GET':
-        if request.args.get('file'):
+        if request.args.get('check'):
+            response = cse_management.check_history(request)
+        elif request.args.get('file'):
             response = cse_management.load_file(request)
         else:
             response = cse_management.fetch_history(request)
+    if request.method == 'POST':
+        response = cse_management.save_selected_data(request)
     if request.method == 'DELETE':
         response = cse_management.delete_history(request)
 
