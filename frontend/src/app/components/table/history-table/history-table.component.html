@@ -38,7 +38,7 @@
   <ng-template pTemplate="body" let-rowData>
     <tr>
       <td>
-        {{ rowData.timestamp }}
+        {{ rowData.timestamp | date: "d MMM y, H:mm:ss":"UTC +7" }}
       </td>
       <td>
         {{ rowData.keyword }}
