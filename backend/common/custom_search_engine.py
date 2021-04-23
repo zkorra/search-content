@@ -1,9 +1,8 @@
 import requests
-from datetime import datetime, timezone
-import pytz
 from flask import request, make_response, json, jsonify
 from google.cloud import storage, firestore
 from common.exceptions import exception_common, exception_cse
+from common.cse_management import save_to_storage, check_history
 from common.dataframe_preparation.article import filter_article_property
 from common.dataframe_preparation.course import filter_course_property
 from config.secret import get_google_api_key
@@ -53,14 +52,16 @@ def fetch(request):
         return exception_common(
             "No result found, try another keyword", 404)
 
-    response_cleaned_data = handle_clean_data(response_data, content_type)
+    response_cleaned_data = handle_cleaning_method(
+        response_data, content_type)
 
-    save_to_storage(response_cleaned_data, keyword, content_type, page, region)
+    save_to_storage(data=response_cleaned_data, save_method='all', content_type=content_type,
+                    search_engine_id=search_engine_id, keyword=keyword,  page=page, region=region)
 
     return make_response(response_cleaned_data, 200)
 
 
-def handle_clean_data(data, content_type):
+def handle_cleaning_method(data, content_type):
     if (content_type == "article"):
         filterArticle = filter_article_property(data)
         return filterArticle
@@ -71,64 +72,64 @@ def handle_clean_data(data, content_type):
         pass
 
 
-def init_current_time():
-    utc_dt = datetime.now(timezone.utc)
-    ICT = pytz.timezone("Asia/Bangkok")
+# def init_current_time():
+#     utc_dt = datetime.now(timezone.utc)
+#     ICT = pytz.timezone("Asia/Bangkok")
 
-    current_time = utc_dt.astimezone(ICT)
+#     current_time = utc_dt.astimezone(ICT)
 
-    return current_time
-
-
-def generate_filename(keyword, content_type):
-    indochina_time = init_current_time().strftime("%Y%m%d-%H%M%S%f")
-
-    filename = f"{keyword}-{content_type}-{indochina_time}"
-
-    return filename
+#     return current_time
 
 
-def save_to_storage(json_data, keyword, content_type, page, region):
-    """Background Cloud Function to be triggered by Cloud Storage.  
-    Args:
-        data (dict): The Cloud Functions event payload.
-        context (google.cloud.functions.Context): Metadata of triggering event.
-    Returns:
-        None; the file is sent as a request to 
-    """
+# def generate_filename(keyword, content_type):
+#     indochina_time = init_current_time().strftime("%Y%m%d-%H%M%S%f")
 
-    filename = generate_filename(keyword, content_type)
-    current_time = init_current_time()
+#     filename = f"{keyword}-{content_type}-{indochina_time}"
 
-    db = firestore.Client()
-    history_ref = db.collection('history')
+#     return filename
 
-    # Get the bucket that the file will be uploaded to.
-    client = storage.Client()
-    bucket = client.get_bucket('search-content-project.appspot.com')
 
-    filename_json = f'{filename}.json'
-    # declare your file name
-    blob = bucket.blob(filename_json)
+# def save_to_storage(json_data, keyword, content_type, page, region):
+#     """Background Cloud Function to be triggered by Cloud Storage.
+#     Args:
+#         data (dict): The Cloud Functions event payload.
+#         context (google.cloud.functions.Context): Metadata of triggering event.
+#     Returns:
+#         None; the file is sent as a request to
+#     """
 
-    # upload json data were we will set content_type as json
-    blob.upload_from_string(
-        data=json.dumps(json_data),
-        content_type='application/json'
-    )
+#     filename = generate_filename(keyword, content_type)
+#     current_time = init_current_time()
 
-    data = {
-        u'timestamp': current_time,
-        u'keyword': keyword,
-        u'content_type': content_type,
-        u'page': page,
-        u'region': region,
-        u'filename': filename_json
-    }
+#     db = firestore.Client()
+#     history_ref = db.collection('history')
 
-    history_ref.document().set(data)
+#     # Get the bucket that the file will be uploaded to.
+#     client = storage.Client()
+#     bucket = client.get_bucket('search-content-project.appspot.com')
 
-    # data = '{"text":"{}"}'.format(contents)
-    # response = requests.post(
-    #     'https://your-instance-server/endpoint-to-download-files', headers=headers, data=data)
-    return 'UPLOAD'
+#     filename_json = f'{filename}.json'
+#     # declare your file name
+#     blob = bucket.blob(filename_json)
+
+#     # upload json data were we will set content_type as json
+#     blob.upload_from_string(
+#         data=json.dumps(json_data),
+#         content_type='application/json'
+#     )
+
+#     data = {
+#         u'timestamp': current_time,
+#         u'keyword': keyword,
+#         u'contentType': content_type,
+#         u'page': page,
+#         u'region': region,
+#         u'filename': filename_json
+#     }
+
+#     history_ref.document().set(data)
+
+#     # data = '{"text":"{}"}'.format(contents)
+#     # response = requests.post(
+#     #     'https://your-instance-server/endpoint-to-download-files', headers=headers, data=data)
+#     return 'UPLOAD'
