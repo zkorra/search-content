@@ -7,7 +7,12 @@ import {
 } from '@angular/forms';
 import { SearchState } from '../../../search/search.state';
 import { EngineState } from '../../../engine/engine.state';
-import { SearchContent, SetSearchParams } from '../../../search/search.action';
+import {
+  SearchContent,
+  SetSearchParams,
+  CheckHistory,
+  GetContentFile,
+} from '../../../search/search.action';
 import { GetEngines } from '../../../engine/engine.action';
 import { Select, Store } from '@ngxs/store';
 import { catchError, map } from 'rxjs/operators';
@@ -27,13 +32,22 @@ export class SearchFormComponent implements OnInit {
   @Select(SearchState.getSearchParamss)
   params: any;
 
+  @Select(SearchState.getSelectedHistory)
+  selectedHistory: any;
+
   searchForm!: FormGroup;
 
-  searchedParams: any;
+  wrapParams: any;
+
+  wrapHistoryData: any;
 
   engineList: any = [];
 
   isManageEngineDialogOpen = false;
+
+  isCSEDialogOpen = false;
+
+  isContentInHistory = false;
 
   types = [
     { key: 'Article', value: 'article' },
@@ -85,6 +99,35 @@ export class SearchFormComponent implements OnInit {
     });
   }
 
+  async checkHistory(params: any): Promise<void> {
+    const checkSearchParams: any = {
+      ...params,
+      check: 'true',
+    };
+
+    await this.store
+      .dispatch(new CheckHistory(checkSearchParams))
+      .pipe(
+        map(async (res) => {
+          await this.selectedHistory.subscribe((data: any) => {
+            if (data?.length > 0) {
+              this.isContentInHistory = true;
+            } else {
+              this.isContentInHistory = false;
+            }
+          });
+        }),
+        catchError(async (error) =>
+          this.messageService.add({
+            severity: 'error',
+            summary: `${error.error.code} - ${error.error.service}`,
+            detail: `${error.error.message}`,
+          })
+        )
+      )
+      .toPromise();
+  }
+
   async searchContent(params: any): Promise<void> {
     await this.store
       .dispatch(new SearchContent(params))
@@ -129,8 +172,21 @@ export class SearchFormComponent implements OnInit {
 
       this.removeEmptyProperty(searchParams);
 
-      await this.searchContent(searchParams);
+      await this.checkHistory(searchParams);
+
+      if (this.isContentInHistory) {
+        this.wrapParams = searchParams;
+        this.displayCSEDialog();
+      } else {
+        await this.searchContent(searchParams);
+      }
     }
+  }
+
+  async onSubmitAgain(params: any): Promise<void> {
+    this.isCSEDialogOpen = false;
+    this.wrapParams = null;
+    await this.searchContent(params);
   }
 
   removeEmptyProperty(object: any): any {
@@ -152,6 +208,10 @@ export class SearchFormComponent implements OnInit {
 
   displayManageEngineDialog(): void {
     this.isManageEngineDialogOpen = true;
+  }
+
+  displayCSEDialog(): void {
+    this.isCSEDialogOpen = true;
   }
 
   onEngineChange(event: any, dropdown: any): void {
@@ -177,5 +237,48 @@ export class SearchFormComponent implements OnInit {
     this.searchForm.controls.searchEngineId.markAsPristine();
 
     this.displayManageEngineDialog();
+  }
+
+  async loadContentHistory(): Promise<void> {
+    await this.selectedHistory.subscribe((data: any) => {
+      if (data?.length > 0) {
+        this.wrapHistoryData = data[0];
+      }
+    });
+
+    if (this.wrapHistoryData) {
+      const {
+        keyword,
+        contentType,
+        page,
+        region,
+        searchEngineId,
+      } = this.wrapHistoryData;
+      const params = {
+        keyword,
+        contentType,
+        page,
+        region,
+        searchEngineId,
+      };
+
+      this.isCSEDialogOpen = false;
+
+      await this.store
+        .dispatch(new GetContentFile(this.wrapHistoryData.filename))
+        .pipe(
+          map(async (res) => {
+            await this.store.dispatch(new SetSearchParams(params)).toPromise();
+          }),
+          catchError(async (error) =>
+            this.messageService.add({
+              severity: 'error',
+              summary: `${error.error.code} - ${error.error.service}`,
+              detail: `${error.error.message}`,
+            })
+          )
+        )
+        .toPromise();
+    }
   }
 }

@@ -138,3 +138,28 @@
 >
   <app-engine-table></app-engine-table>
 </p-dialog>
+
+<p-dialog
+  header="Custom Search Engine"
+  [(visible)]="isCSEDialogOpen"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+>
+  <p>You've searched.</p>
+  <ng-template pTemplate="footer">
+    <p-button
+      icon="pi pi-check"
+      label="Get from history"
+      (click)="loadContentHistory()"
+      styleClass="p-button-text"
+    ></p-button>
+    <p-button
+      icon="pi pi-check"
+      label="Get new one"
+      (click)="onSubmitAgain(this.wrapParams)"
+      styleClass="p-button-text"
+    ></p-button>
+  </ng-template>
+</p-dialog>
