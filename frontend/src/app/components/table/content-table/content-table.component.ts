@@ -1,10 +1,14 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { SearchState } from '../../../search/search.state';
-import { SearchContent, GetContentFile } from '../../../search/search.action';
+import {
+  SearchContent,
+  SaveSelectedContent,
+} from '../../../search/search.action';
 import { Actions, ofActionSuccessful, Select, Store } from '@ngxs/store';
 import { ActivatedRoute } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import * as FileSaver from 'file-saver';
+import { catchError, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-content-table',
@@ -117,19 +121,39 @@ export class ContentTableComponent implements OnInit {
     }));
   }
 
+  async saveSelectedContent(rows: any): Promise<void> {
+    const data = {
+      ...this.searchParams,
+      data: rows,
+    };
+
+    console.log(data);
+
+    await this.store
+      .dispatch(new SaveSelectedContent(data))
+      .pipe(
+        catchError(async (error) =>
+          this.messageService.add({
+            severity: 'error',
+            summary: `${error.error.code} - ${error.error.service}`,
+            detail: `${error.error.message}`,
+          })
+        )
+      )
+      .toPromise();
+  }
+
   private saveAsFile(buffer: any, fileName: string, fileType: string): void {
     const data: Blob = new Blob(['\uFEFF' + buffer], { type: fileType });
     FileSaver.saveAs(data, fileName);
   }
 
-  public exportToCsv(
-    rows: object[],
-    fileName: string,
-    columns?: string[]
-  ): any {
+  handleExport(rows: object[], fileName: string, columns?: string[]): any {
     if (!rows || !rows.length) {
       return;
     }
+
+    this.saveSelectedContent(rows);
 
     rows = this.appendKeywordProperty(rows);
     columns = this.appendKeywordColumn(columns);
