@@ -45,13 +45,13 @@ export class HistoryTableComponent implements OnInit {
   }
 
   async loadContentFile(historyData: any): Promise<void> {
-    const { keyword, content_type, page, region } = historyData;
+    const { keyword, contentType, page, region, searchEngineId } = historyData;
     const params = {
       keyword,
-      contentType: content_type,
+      contentType,
       page,
       region,
-      searchEngineId: '',
+      searchEngineId,
     };
 
     await this.store
