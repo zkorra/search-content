@@ -25,7 +25,7 @@
         (click)="
           selectedContentList?.length === 0 ||
           selectedContentList?.length === contentList?.length
-            ? exportToCsv(
+            ? handleExport(
                 contentList,
                 searchParams?.keyword +
                   '_' +
@@ -33,7 +33,7 @@
                   '_all',
                 uniqueColumnsName
               )
-            : exportToCsv(
+            : handleExport(
                 selectedContentList,
                 searchParams?.keyword +
                   '_' +
