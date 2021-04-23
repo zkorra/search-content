@@ -25,3 +25,15 @@ export class DeleteHistory {
 
   constructor(public id: string) {}
 }
+
+export class CheckHistory {
+  static readonly type = '[History] Check';
+
+  constructor(public searchParams: {}) {}
+}
+
+export class SaveSelectedContent {
+  static readonly type = '[History] Save Selected';
+
+  constructor(public payload: any) {}
+}
