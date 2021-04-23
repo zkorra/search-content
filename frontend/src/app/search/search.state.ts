@@ -6,6 +6,8 @@ import {
   GetHistory,
   GetContentFile,
   DeleteHistory,
+  CheckHistory,
+  SaveSelectedContent,
 } from './search.action';
 import { SearchService } from './search.service';
 import { tap } from 'rxjs/operators';
@@ -14,6 +16,7 @@ export class SearchStateModel {
   contents: any;
   params: any;
   history: any;
+  selectedHistory: any;
 }
 
 @Injectable()
@@ -23,6 +26,7 @@ export class SearchStateModel {
     contents: null,
     params: null,
     history: null,
+    selectedHistory: null,
   },
 })
 export class SearchState {
@@ -41,6 +45,11 @@ export class SearchState {
   @Selector()
   static getHistoryList(state: SearchStateModel): any {
     return state.history;
+  }
+
+  @Selector()
+  static getSelectedHistory(state: SearchStateModel): any {
+    return state.selectedHistory;
   }
 
   @Action(SearchContent)
@@ -115,6 +124,37 @@ export class SearchState {
           ...state,
           history: filteredArray,
         });
+      })
+    );
+  }
+
+  @Action(CheckHistory)
+  checkHistory(
+    { getState, setState }: StateContext<SearchStateModel>,
+    { searchParams }: CheckHistory
+  ): any {
+    return this.searchService.checkHistory(searchParams).pipe(
+      tap((result) => {
+        const state = getState();
+        setState({
+          ...state,
+          selectedHistory: result,
+        });
+      })
+    );
+  }
+
+  @Action(SaveSelectedContent)
+  saveSelectedContent(
+    { getState, patchState }: StateContext<SearchStateModel>,
+    { payload }: SaveSelectedContent
+  ): any {
+    return this.searchService.saveSelectedContent(payload).pipe(
+      tap((result: any) => {
+        // const state = getState();
+        // patchState({
+        //   contents: [...state.contents, result],
+        // });
       })
     );
   }

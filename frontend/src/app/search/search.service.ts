@@ -30,4 +30,17 @@ export class SearchService {
   deleteHistory(id: string): any {
     return this.http.delete<any>(`${environment.backendUrl}/history?id=${id}`);
   }
+
+  checkHistory(searchParams: any): any {
+    let params = new HttpParams();
+    params = searchParams;
+
+    return this.http.get<any>(`${environment.backendUrl}/history`, {
+      params,
+    });
+  }
+
+  saveSelectedContent(payload: any): any {
+    return this.http.post<any>(`${environment.backendUrl}/history`, payload);
+  }
 }
