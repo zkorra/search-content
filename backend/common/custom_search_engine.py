@@ -1,8 +1,9 @@
 import requests
+import urllib.parse
 from flask import request, make_response, json, jsonify
 from google.cloud import storage, firestore
 from common.exceptions import exception_common, exception_cse
-from common.cse_management import save_to_storage, check_history
+from common.cse_management import save_to_storage, check_history, delete_history_by_condition
 from common.dataframe_preparation.article import filter_article_property
 from common.dataframe_preparation.course import filter_course_property
 from config.secret import get_google_api_key
@@ -52,8 +53,13 @@ def fetch(request):
         return exception_common(
             "No result found, try another keyword", 404)
 
+    keyword = urllib.parse.unquote(keyword)
+
     response_cleaned_data = handle_cleaning_method(
         response_data, content_type)
+
+    delete_history_by_condition(save_method='all', content_type=content_type,
+                                search_engine_id=search_engine_id, keyword=keyword,  page=page, region=region)
 
     save_to_storage(data=response_cleaned_data, save_method='all', content_type=content_type,
                     search_engine_id=search_engine_id, keyword=keyword,  page=page, region=region)
@@ -70,66 +76,3 @@ def handle_cleaning_method(data, content_type):
         return filterCourse
     else:
         pass
-
-
-# def init_current_time():
-#     utc_dt = datetime.now(timezone.utc)
-#     ICT = pytz.timezone("Asia/Bangkok")
-
-#     current_time = utc_dt.astimezone(ICT)
-
-#     return current_time
-
-
-# def generate_filename(keyword, content_type):
-#     indochina_time = init_current_time().strftime("%Y%m%d-%H%M%S%f")
-
-#     filename = f"{keyword}-{content_type}-{indochina_time}"
-
-#     return filename
-
-
-# def save_to_storage(json_data, keyword, content_type, page, region):
-#     """Background Cloud Function to be triggered by Cloud Storage.
-#     Args:
-#         data (dict): The Cloud Functions event payload.
-#         context (google.cloud.functions.Context): Metadata of triggering event.
-#     Returns:
-#         None; the file is sent as a request to
-#     """
-
-#     filename = generate_filename(keyword, content_type)
-#     current_time = init_current_time()
-
-#     db = firestore.Client()
-#     history_ref = db.collection('history')
-
-#     # Get the bucket that the file will be uploaded to.
-#     client = storage.Client()
-#     bucket = client.get_bucket('search-content-project.appspot.com')
-
-#     filename_json = f'{filename}.json'
-#     # declare your file name
-#     blob = bucket.blob(filename_json)
-
-#     # upload json data were we will set content_type as json
-#     blob.upload_from_string(
-#         data=json.dumps(json_data),
-#         content_type='application/json'
-#     )
-
-#     data = {
-#         u'timestamp': current_time,
-#         u'keyword': keyword,
-#         u'contentType': content_type,
-#         u'page': page,
-#         u'region': region,
-#         u'filename': filename_json
-#     }
-
-#     history_ref.document().set(data)
-
-#     # data = '{"text":"{}"}'.format(contents)
-#     # response = requests.post(
-#     #     'https://your-instance-server/endpoint-to-download-files', headers=headers, data=data)
-#     return 'UPLOAD'
