@@ -209,13 +209,7 @@ def save_selected_data(request):
     if not request.json['page']:
         page = "1"
 
-    if request.json['page'] == "":
-        page = "1"
-
     if not request.json['region']:
-        region = ""
-
-    if request.json['region'] == "":
         region = ""
 
     if not request.json['data']:
@@ -227,6 +221,9 @@ def save_selected_data(request):
     page = request.json['page']
     region = request.json['region']
     data = request.json['data']
+
+    if page == "":
+        page = "1"
 
     data_json = json.dumps(data, sort_keys=False)
 
