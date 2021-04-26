@@ -127,8 +127,6 @@ export class ContentTableComponent implements OnInit {
       data: rows,
     };
 
-    console.log(data);
-
     await this.store
       .dispatch(new SaveSelectedContent(data))
       .pipe(
