@@ -25,6 +25,8 @@ def fetch_history(request):
         history["id"] = doc.id
         all_history.append(history)
 
+    all_history.sort(key=lambda x: x['timestamp'], reverse=True)
+
     return make_response(jsonify(all_history), 200)
 
 
@@ -70,6 +72,33 @@ def delete_history(request):
     blob = bucket.get_blob(str(history["filename"]))
 
     blob.delete()
+
+    return make_response(jsonify({"success": True}), 200)
+
+
+def delete_history_by_condition(save_method, content_type, search_engine_id, keyword, page, region):
+    """
+        delete() : Delete a document from Firestore collection
+    """
+
+    docs = history_ref.where(u'saveMethod', u'==', save_method).where(u'contentType', u'==', content_type).where(u'searchEngineId', u'==', search_engine_id).where(
+        u'keyword', u'==', keyword).where(u'page', u'==', page).where(u'region', u'==', region).stream()
+
+    all_history = []
+
+    for doc in docs:
+        history = doc.to_dict()
+
+        history_ref.document(doc.id).delete()
+        blob = bucket.get_blob(str(history["filename"]))
+
+        blob.delete()
+
+    # history_ref.document(history["id"]).delete()
+
+    # blob = bucket.get_blob(str(history["filename"]))
+
+    # blob.delete()
 
     return make_response(jsonify({"success": True}), 200)
 
@@ -143,10 +172,10 @@ def check_history(request):
     keyword = request.args.get('query', '')
     page = request.args.get('page', '1')
     region = request.args.get('region', '')
-    # isCheck = request.args.get('check', 'false')
+    isCheck = request.args.get('check', 'false')
 
-    # Check if ID was passed to URL query
-    todo_id = request.args.get('id')
+    if isCheck == 'false':
+        return exception_common('Checking params need be true', 400)
 
     docs = history_ref.where(u'contentType', u'==', content_type).where(u'searchEngineId', u'==', search_engine_id).where(
         u'keyword', u'==', keyword).where(u'page', u'==', page).where(u'region', u'==', region).stream()
@@ -168,8 +197,6 @@ def check_history(request):
 
 def save_selected_data(request):
 
-    print(request.json)
-
     if not request.json['contentType']:
         return exception_common('Content type is missing', 400)
 
@@ -182,7 +209,13 @@ def save_selected_data(request):
     if not request.json['page']:
         page = "1"
 
+    if request.json['page'] == "":
+        page = "1"
+
     if not request.json['region']:
+        region = ""
+
+    if request.json['region'] == "":
         region = ""
 
     if not request.json['data']:
@@ -195,7 +228,12 @@ def save_selected_data(request):
     region = request.json['region']
     data = request.json['data']
 
-    save_to_storage(data=data, save_method='selected', content_type=content_type,
+    data_json = json.dumps(data, sort_keys=False)
+
+    delete_history_by_condition(save_method='selected', content_type=content_type,
+                                search_engine_id=search_engine_id, keyword=keyword,  page=page, region=region)
+
+    save_to_storage(data=data_json, save_method='selected', content_type=content_type,
                     search_engine_id=search_engine_id, keyword=keyword,  page=page, region=region)
 
     return make_response(jsonify({"success": True}), 200)
