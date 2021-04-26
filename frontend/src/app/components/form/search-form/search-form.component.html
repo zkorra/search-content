@@ -147,19 +147,26 @@
   [resizable]="false"
   [dismissableMask]="true"
 >
-  <p>You've searched.</p>
+  <p>
+    We've found results in history. Do you want to load results in history or
+    get a new one.
+  </p>
+  <small
+    >note that: If you get a new one, this will replace your old history.</small
+  >
   <ng-template pTemplate="footer">
     <p-button
-      icon="pi pi-check"
+      icon="pi pi-replay"
+      iconPos="right"
       label="Get from history"
       (click)="loadContentHistory()"
-      styleClass="p-button-text"
+      styleClass="p-button-secondary p-button-outlined"
     ></p-button>
     <p-button
-      icon="pi pi-check"
+      icon="pi pi-chevron-right"
+      iconPos="right"
       label="Get new one"
       (click)="onSubmitAgain(this.wrapParams)"
-      styleClass="p-button-text"
     ></p-button>
   </ng-template>
 </p-dialog>
