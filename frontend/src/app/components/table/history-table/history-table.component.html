@@ -26,11 +26,12 @@
       <th pSortableColumn="keyword">
         Keyword <p-sortIcon field="keyword"></p-sortIcon>
       </th>
-      <th pSortableColumn="content_type">
-        Content Type <p-sortIcon field="content_type"></p-sortIcon>
+      <th pSortableColumn="contentType">
+        Content Type <p-sortIcon field="contentType"></p-sortIcon>
       </th>
       <th>Page</th>
       <th>Region</th>
+      <th>Query Type</th>
       <th style="width: 8rem"></th>
     </tr>
   </ng-template>
@@ -44,13 +45,16 @@
         {{ rowData.keyword }}
       </td>
       <td style="text-transform: capitalize">
-        {{ rowData.content_type }}
+        {{ rowData.contentType }}
       </td>
       <td>
         {{ rowData.page }}
       </td>
       <td>
         {{ rowData.region }}
+      </td>
+      <td>
+        {{ rowData.saveMethod }}
       </td>
       <td>
         <button

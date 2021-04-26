@@ -78,7 +78,7 @@ export class HistoryTableComponent implements OnInit {
         'Are you sure you want to delete "' +
         historyData.keyword +
         ' ' +
-        historyData.content_type +
+        historyData.contentType +
         '" ?',
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
