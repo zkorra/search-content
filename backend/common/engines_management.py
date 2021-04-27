@@ -8,8 +8,7 @@ engine_ref = db.collection('engines')
 
 def fetch_engines():
     """
-        read() : Fetches documents from Firestore collection as JSON
-        engine : Return document that matches query ID
+        fetch_engines() : Fetches documents from Firestore collection as JSON
         all_engines : Return all documents
     """
     all_engines = []
@@ -24,9 +23,9 @@ def fetch_engines():
 
 def create_engine(request):
     """
-        create() : Add document to Firestore collection with request body
-        Ensure you pass a custom ID as part of json body in post request
-        e.g. json={'searchEngineId': '1f22',
+        create_engine() : Add document to Firestore collection with request body
+        Ensure you pass a Search Engine ID as part of json body in post request
+        e.g. json={'searchEngineId': '1f22ff85',
             'name': 'myengine', 'contentType': 'article'}
     """
 
@@ -54,8 +53,8 @@ def create_engine(request):
 
 def update_engine(request):
     """
-        update() : Update document in Firestore collection with request body
-        Ensure you pass a custom ID as part of json body in post request
+        update_engine() : Update document in Firestore collection with request body
+        Ensure you pass a Search Engine ID as part of json body in post request
         e.g. json={'searchEngineId': '1f22',
             'name': 'myengine', 'contentType': 'article'}
     """
@@ -85,7 +84,7 @@ def update_engine(request):
 
 def delete_engine(request):
     """
-        delete() : Delete a document from Firestore collection
+        delete_engine() : Delete a document from Firestore collection
     """
     id = request.args.get('id')
 
