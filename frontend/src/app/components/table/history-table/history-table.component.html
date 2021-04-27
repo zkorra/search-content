@@ -31,7 +31,7 @@
       </th>
       <th>Page</th>
       <th>Region</th>
-      <th>Query Type</th>
+      <th>Saved</th>
       <th style="width: 8rem"></th>
     </tr>
   </ng-template>
@@ -51,9 +51,9 @@
         {{ rowData.page }}
       </td>
       <td>
-        {{ rowData.region }}
+        {{ regionDict[rowData.region] }}
       </td>
-      <td>
+      <td style="text-transform: capitalize">
         {{ rowData.saveMethod }}
       </td>
       <td>
