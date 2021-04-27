@@ -13,9 +13,8 @@ bucket = client.get_bucket('search-content-project.appspot.com')
 
 def fetch_history(request):
     """
-        read() : Fetches documents from Firestore collection as JSON
-        engine : Return document that matches query ID
-        all_engines : Return all documents
+        fetch_history() : Fetches documents from Firestore collection as JSON
+        all_history : Return all documents
     """
 
     all_history = []
@@ -30,11 +29,10 @@ def fetch_history(request):
     return make_response(jsonify(all_history), 200)
 
 
-def load_file(request):
+def load_content_file(request):
     """
-        read() : Fetches documents from Firestore collection as JSON
-        engine : Return document that matches query ID
-        all_engines : Return all documents
+        load_content_file() : Fetches json file from Cloud Storage
+        file_data : Return file that matches param
     """
 
     filename = request.args.get('file')
@@ -57,7 +55,7 @@ def load_file(request):
 
 def delete_history(request):
     """
-        delete() : Delete a document from Firestore collection
+        delete_history() : Delete a document from Firestore collection and file from Cloud Storage
     """
     id = request.args.get('id')
 
@@ -78,7 +76,7 @@ def delete_history(request):
 
 def delete_history_by_condition(save_method, content_type, search_engine_id, keyword, page, region):
     """
-        delete() : Delete a document from Firestore collection
+        delete_history_by_condition() : Delete a document from Firestore collection and file from Cloud Storage
     """
 
     docs = history_ref.where(u'saveMethod', u'==', save_method).where(u'contentType', u'==', content_type).where(u'searchEngineId', u'==', search_engine_id).where(
@@ -94,16 +92,13 @@ def delete_history_by_condition(save_method, content_type, search_engine_id, key
 
         blob.delete()
 
-    # history_ref.document(history["id"]).delete()
-
-    # blob = bucket.get_blob(str(history["filename"]))
-
-    # blob.delete()
-
     return make_response(jsonify({"success": True}), 200)
 
 
 def init_current_time():
+    """
+        init_current_time() : Init current Indochina time
+    """
     utc_dt = datetime.now(timezone.utc)
     ICT = pytz.timezone("Asia/Bangkok")
 
@@ -113,6 +108,9 @@ def init_current_time():
 
 
 def generate_filename(keyword, content_type):
+    """
+        generate_filename() : Generate filename by keyword, content type and time
+    """
     indochina_time = init_current_time().strftime("%Y%m%d-%H%M%S%f")
 
     filename = f"{keyword}-{content_type}-{indochina_time}"
@@ -122,13 +120,6 @@ def generate_filename(keyword, content_type):
 
 def save_to_storage(data, save_method: str, content_type: str,
                     search_engine_id: str, keyword: str,  page: str, region: str):
-    """Background Cloud Function to be triggered by Cloud Storage.  
-    Args:
-        data (dict): The Cloud Functions event payload.
-        context (google.cloud.functions.Context): Metadata of triggering event.
-    Returns:
-        None; the file is sent as a request to 
-    """
 
     if save_method != 'all' and save_method != 'selected':
         return exception_common('Save Method must be all or selected, but we received ' + save_method, 400)
@@ -137,7 +128,7 @@ def save_to_storage(data, save_method: str, content_type: str,
     current_time = init_current_time()
 
     filename_json = f'{filename}.json'
-    # declare your file name
+
     blob = bucket.blob(filename_json)
 
     # upload json data were we will set content_type as json
@@ -159,10 +150,7 @@ def save_to_storage(data, save_method: str, content_type: str,
 
     history_ref.document().set(data)
 
-    # data = '{"text":"{}"}'.format(contents)
-    # response = requests.post(
-    #     'https://your-instance-server/endpoint-to-download-files', headers=headers, data=data)
-    return 'UPLOAD'
+    return 'UPLOADED'
 
 
 def check_history(request):
@@ -174,7 +162,18 @@ def check_history(request):
     region = request.args.get('region', '')
     isCheck = request.args.get('check', 'false')
 
-    if isCheck == 'false':
+    if not content_type:
+        return exception_common('Content Type is missing', 400)
+    elif content_type != 'article' and content_type != 'course':
+        return exception_common('Content Type must be article or course, but we received ' + content_type, 400)
+
+    if not search_engine_id:
+        return exception_common('Search Engine ID is missing', 400)
+
+    if not keyword:
+        return exception_common('Keyword is missing', 400)
+
+    if isCheck != 'true':
         return exception_common('Checking params need be true', 400)
 
     docs = history_ref.where(u'contentType', u'==', content_type).where(u'searchEngineId', u'==', search_engine_id).where(
@@ -197,24 +196,6 @@ def check_history(request):
 
 def save_selected_data(request):
 
-    if not request.json['contentType']:
-        return exception_common('Content type is missing', 400)
-
-    if not request.json['searchEngineId']:
-        return exception_common('Search engine ID is missing', 400)
-
-    if not request.json['keyword']:
-        return exception_common('Keyword is missing', 400)
-
-    if not request.json['page']:
-        page = "1"
-
-    if not request.json['region']:
-        region = ""
-
-    if not request.json['data']:
-        return exception_common('Content data is missing', 400)
-
     content_type = request.json['contentType']
     search_engine_id = request.json['searchEngineId']
     keyword = request.json['keyword']
@@ -222,8 +203,23 @@ def save_selected_data(request):
     region = request.json['region']
     data = request.json['data']
 
-    if page == "":
+    if not content_type:
+        return exception_common('Content type is missing', 400)
+
+    if not search_engine_id:
+        return exception_common('Search engine ID is missing', 400)
+
+    if not keyword:
+        return exception_common('Keyword is missing', 400)
+
+    if not page:
         page = "1"
+
+    if not region:
+        region = ""
+
+    if not data:
+        return exception_common('Content data is missing', 400)
 
     data_json = json.dumps(data, sort_keys=False)
 
