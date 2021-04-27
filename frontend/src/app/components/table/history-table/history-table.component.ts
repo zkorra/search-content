@@ -23,6 +23,12 @@ export class HistoryTableComponent implements OnInit {
 
   historyList: any = [];
 
+  regionDict: any = {
+    '': 'All',
+    countryTH: 'Thailand',
+    countryUS: 'United States',
+  };
+
   constructor(
     private store: Store,
     private router: Router,
