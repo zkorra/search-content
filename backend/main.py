@@ -23,7 +23,7 @@ def history(request):
         if request.args.get('check'):
             response = cse_management.check_history(request)
         elif request.args.get('file'):
-            response = cse_management.load_file(request)
+            response = cse_management.load_content_file(request)
         else:
             response = cse_management.fetch_history(request)
     if request.method == 'POST':
