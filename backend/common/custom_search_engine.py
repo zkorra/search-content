@@ -9,6 +9,17 @@ from common.dataframe_preparation.course import filter_course_property
 from config.secret import get_google_api_key
 
 
+def handle_cleaning_method(data, content_type):
+    if (content_type == "article"):
+        filterArticle = filter_article_property(data)
+        return filterArticle
+    elif(content_type == "course"):
+        filterCourse = filter_course_property(data)
+        return filterCourse
+    else:
+        pass
+
+
 def fetch(request):
 
     GOOGLE_API_KEY = get_google_api_key()
@@ -65,14 +76,3 @@ def fetch(request):
                     search_engine_id=search_engine_id, keyword=keyword,  page=page, region=region)
 
     return make_response(response_cleaned_data, 200)
-
-
-def handle_cleaning_method(data, content_type):
-    if (content_type == "article"):
-        filterArticle = filter_article_property(data)
-        return filterArticle
-    elif(content_type == "course"):
-        filterCourse = filter_course_property(data)
-        return filterCourse
-    else:
-        pass
