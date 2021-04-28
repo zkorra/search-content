@@ -13,7 +13,7 @@ export class SearchService {
     params = searchParams;
 
     return this.http.get<any>(
-      `${environment.backendUrl1}/fetch_custom_search`,
+      `${environment.backendUrl}/fetch_custom_search`,
       {
         params,
       }
