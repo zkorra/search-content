@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "scoutout-search-content": {
+      "hosting": {
+        "frontend": [
+          "scoutout-search-content"
+        ]
+      }
+    }
+  }
+}
