@@ -12,9 +12,12 @@ export class SearchService {
     let params = new HttpParams();
     params = searchParams;
 
-    return this.http.get<any>(`${environment.backendUrl}/fetch_custom_search`, {
-      params,
-    });
+    return this.http.get<any>(
+      `${environment.backendUrl1}/fetch_custom_search`,
+      {
+        params,
+      }
+    );
   }
 
   fetchHistory(): any {
