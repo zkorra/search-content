@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   // backendUrl: 'http://localhost:8080',
-  backendUrl: 'https://asia-southeast2-search-content-project.cloudfunctions.net',
+  backendUrl:
+    'https://asia-southeast2-scoutout-search-content.cloudfunctions.net',
 };
 
 /*

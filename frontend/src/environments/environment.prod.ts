@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
   backendUrl:
-    'https://asia-southeast2-search-content-project.cloudfunctions.net',
+    'https://asia-southeast2-scoutout-search-content.cloudfunctions.net',
 };
