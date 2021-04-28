@@ -51,7 +51,14 @@ export class HistoryTableComponent implements OnInit {
   }
 
   async loadContentFile(historyData: any): Promise<void> {
-    const { keyword, contentType, page, region, searchEngineId } = historyData;
+    const {
+      keyword,
+      contentType,
+      page,
+      region,
+      searchEngineId,
+      filename,
+    } = historyData;
     const params = {
       keyword,
       contentType,
@@ -60,8 +67,10 @@ export class HistoryTableComponent implements OnInit {
       searchEngineId,
     };
 
+    const filenameEncoded = encodeURIComponent(filename);
+
     await this.store
-      .dispatch(new GetContentFile(historyData.filename))
+      .dispatch(new GetContentFile(filenameEncoded))
       .pipe(
         map(async (res) => {
           await this.store.dispatch(new SetSearchParams(params)).toPromise();
