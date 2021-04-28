@@ -1,14 +1,18 @@
 from flask import request, jsonify, make_response, json
 from datetime import datetime, timezone
 import pytz
+import urllib.parse
 from google.cloud import firestore, storage
 from common.exceptions import exception_common
+from config.secret import get_storage_name
+
+STORAGE_NAME = get_storage_name()
 
 db = firestore.Client()
 history_ref = db.collection('history')
 
 client = storage.Client()
-bucket = client.get_bucket('search-content-project.appspot.com')
+bucket = client.get_bucket(STORAGE_NAME)
 
 
 def fetch_history(request):
@@ -42,6 +46,8 @@ def load_content_file(request):
 
     if filename[-5:] != '.json':
         return exception_common('File format is missing', 400)
+
+    filename = urllib.parse.unquote(filename)
 
     blob = bucket.get_blob(filename)
 
@@ -175,6 +181,8 @@ def check_history(request):
 
     if isCheck != 'true':
         return exception_common('Checking params need be true', 400)
+
+    keyword = urllib.parse.unquote(keyword)
 
     docs = history_ref.where(u'contentType', u'==', content_type).where(u'searchEngineId', u'==', search_engine_id).where(
         u'keyword', u'==', keyword).where(u'page', u'==', page).where(u'region', u'==', region).stream()
