@@ -253,6 +253,7 @@ export class SearchFormComponent implements OnInit {
         page,
         region,
         searchEngineId,
+        filename,
       } = this.wrapHistoryData;
       const params = {
         keyword,
@@ -264,8 +265,10 @@ export class SearchFormComponent implements OnInit {
 
       this.isCSEDialogOpen = false;
 
+      const filenameEncoded = encodeURIComponent(filename);
+
       await this.store
-        .dispatch(new GetContentFile(this.wrapHistoryData.filename))
+        .dispatch(new GetContentFile(filenameEncoded))
         .pipe(
           map(async (res) => {
             await this.store.dispatch(new SetSearchParams(params)).toPromise();
