@@ -47,8 +47,6 @@ def load_content_file(request):
     if filename[-5:] != '.json':
         return exception_common('File format is missing', 400)
 
-    filename = urllib.parse.unquote(filename)
-
     blob = bucket.get_blob(filename)
 
     if not blob:
@@ -84,6 +82,8 @@ def delete_history_by_condition(save_method, content_type, search_engine_id, key
     """
         delete_history_by_condition() : Delete a document from Firestore collection and file from Cloud Storage
     """
+
+    keyword = urllib.parse.unquote(keyword)
 
     docs = history_ref.where(u'saveMethod', u'==', save_method).where(u'contentType', u'==', content_type).where(u'searchEngineId', u'==', search_engine_id).where(
         u'keyword', u'==', keyword).where(u'page', u'==', page).where(u'region', u'==', region).stream()
@@ -147,7 +147,7 @@ def save_to_storage(data, save_method: str, content_type: str,
         u'timestamp': current_time,
         u'contentType': content_type,
         u'searchEngineId': search_engine_id,
-        u'keyword': keyword,
+        u'keyword': urllib.parse.unquote(keyword),
         u'page': page,
         u'region': region,
         u'filename': filename_json,
