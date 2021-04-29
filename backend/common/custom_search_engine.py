@@ -3,7 +3,7 @@ import urllib.parse
 from flask import request, make_response, json, jsonify
 from google.cloud import storage, firestore
 from common.exceptions import exception_common, exception_cse
-from common.cse_management import save_to_storage, check_history, delete_history_by_condition
+from common.history_management import save_to_storage, check_history, delete_history_by_condition
 from common.dataframe_preparation.article import filter_article_property
 from common.dataframe_preparation.course import filter_course_property
 from config.secret import get_google_api_key
@@ -63,8 +63,6 @@ def fetch(request):
     if not response_data.get("items"):
         return exception_common(
             "No result found, try another keyword", 404)
-
-    keyword = urllib.parse.unquote(keyword)
 
     response_cleaned_data = handle_cleaning_method(
         response_data, content_type)
