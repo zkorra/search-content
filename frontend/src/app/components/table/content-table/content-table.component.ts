@@ -122,8 +122,19 @@ export class ContentTableComponent implements OnInit {
   }
 
   async saveSelectedContent(rows: any): Promise<void> {
+    const {
+      keyword,
+      contentType,
+      page,
+      region,
+      searchEngineId,
+    } = this.searchParams;
     const data = {
-      ...this.searchParams,
+      keyword: encodeURIComponent(keyword.trim()),
+      contentType,
+      page,
+      region,
+      searchEngineId: searchEngineId.trim(),
       data: rows,
     };
 
