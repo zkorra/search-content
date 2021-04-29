@@ -164,8 +164,8 @@ export class SearchFormComponent implements OnInit {
 
       const searchParams: any = {
         type: contentType,
-        cx: searchEngineId,
-        query: encodeURIComponent(keyword),
+        cx: searchEngineId.trim(),
+        query: encodeURIComponent(keyword.trim()),
         page,
         region,
       };
